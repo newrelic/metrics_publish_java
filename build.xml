@@ -3,6 +3,8 @@
     <property name="srcdir" value="src/"/>
     <property name="builddir" value="bin"/>
     <property name="jarfile" value="releases/current/metrics_publish.jar"/>
+	<property name="libdir" value="lib"/>
+	
     <path id="classpath">
         <pathelement location="lib/json-simple-1.1.1.jar"/>
     </path>
@@ -21,6 +23,8 @@
         <echo>Done.</echo>
     </target>
 
+
+	
     <target name="clean">
         <echo>Cleaning project...</echo>
         <delete dir="${builddir}"/>
@@ -31,6 +35,7 @@
     <target name="jar" depends="compile" description="create a Jar file for the application">
         <jar destfile="${jarfile}">
             <fileset dir="${builddir}"/>
+            <zipgroupfileset dir="${libdir}" includes="*.jar"/>        
        </jar>
     </target>
 </project>
