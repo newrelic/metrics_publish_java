@@ -1,4 +1,4 @@
-package com.newrelic.platform.metrics.publish.processors;
+package com.newrelic.metrics.publish.processors;
 
 import java.util.Date;
 

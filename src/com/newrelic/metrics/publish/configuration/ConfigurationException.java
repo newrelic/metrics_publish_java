@@ -1,4 +1,4 @@
-package com.newrelic.platform.metrics.publish.configuration;
+package com.newrelic.metrics.publish.configuration;
 
 public class ConfigurationException extends Exception {
 

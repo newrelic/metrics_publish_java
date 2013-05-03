@@ -1,9 +1,9 @@
-package com.newrelic.platform.metrics.publish.internal;
+package com.newrelic.metrics.publish.internal;
 
-import com.newrelic.platform.metrics.publish.Agent;
-import com.newrelic.platform.metrics.publish.binding.ComponentData;
-import com.newrelic.platform.metrics.publish.binding.Context;
-import com.newrelic.platform.metrics.publish.binding.Request;
+import com.newrelic.metrics.publish.Agent;
+import com.newrelic.metrics.publish.binding.ComponentData;
+import com.newrelic.metrics.publish.binding.Context;
+import com.newrelic.metrics.publish.binding.Request;
 
 /**
  * Associates an Agent with a new Request for collecting data from the agent.

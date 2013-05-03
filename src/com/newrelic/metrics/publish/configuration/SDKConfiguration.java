@@ -1,4 +1,4 @@
-package com.newrelic.platform.metrics.publish.configuration;
+package com.newrelic.metrics.publish.configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import com.newrelic.platform.metrics.publish.binding.Context;
+import com.newrelic.metrics.publish.binding.Context;
 
 
 

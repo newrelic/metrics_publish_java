@@ -1,4 +1,4 @@
-package com.newrelic.platform.metrics.publish;
+package com.newrelic.metrics.publish;
 
 import java.io.File;
 import java.io.FileReader;
@@ -11,8 +11,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.newrelic.platform.metrics.publish.binding.Context;
-import com.newrelic.platform.metrics.publish.configuration.ConfigurationException;
+import com.newrelic.metrics.publish.binding.Context;
+import com.newrelic.metrics.publish.configuration.ConfigurationException;
 
 /**
  * AgentFactory has two roles:

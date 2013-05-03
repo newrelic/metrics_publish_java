@@ -1,4 +1,4 @@
-package com.newrelic.platform.metrics.publish;
+package com.newrelic.metrics.publish;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -10,10 +10,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.newrelic.platform.metrics.publish.binding.Context;
-import com.newrelic.platform.metrics.publish.binding.Request;
-import com.newrelic.platform.metrics.publish.configuration.ConfigurationException;
-import com.newrelic.platform.metrics.publish.configuration.SDKConfiguration;
+import com.newrelic.metrics.publish.binding.Context;
+import com.newrelic.metrics.publish.binding.Request;
+import com.newrelic.metrics.publish.configuration.ConfigurationException;
+import com.newrelic.metrics.publish.configuration.SDKConfiguration;
 
 /**
  * The main entry point for executing the SDK.

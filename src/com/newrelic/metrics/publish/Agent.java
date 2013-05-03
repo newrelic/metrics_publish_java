@@ -1,7 +1,7 @@
-package com.newrelic.platform.metrics.publish;
+package com.newrelic.metrics.publish;
 
-import com.newrelic.platform.metrics.publish.binding.Context;
-import com.newrelic.platform.metrics.publish.internal.DataCollector;
+import com.newrelic.metrics.publish.binding.Context;
+import com.newrelic.metrics.publish.internal.DataCollector;
 
 public abstract class Agent {
 

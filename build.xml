@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="newrelic_javaSDK" default="jar" basedir=".">
+    <property name="srcdir" value="com.newrelic.data.in/src/"/>
+    <property name="builddir" value="bin"/>
+    <property name="jarfile" value="newrelic_javaSDK.jar"/>
+    <path id="classpath">
+        <pathelement location="lib/json-simple-1.1.1.jar"/>
+    </path>
+    
+    <target name="init" depends="clean">
+        <echo>Creating directory: ${builddir}</echo>
+        <mkdir dir="${builddir}"/>
+    </target>
+    
+    <target name="compile" depends="init">
+        <!--  Compile the java code  -->
+        <echo>Building project...</echo>
+        <javac srcdir="${srcdir}" destdir="${builddir}">
+            <classpath refid="classpath"/>
+        </javac>
+        <echo>Done.</echo>
+    </target>
+
+    <target name="clean">
+        <echo>Cleaning project...</echo>
+        <delete dir="${builddir}"/>
+        <delete file="${jarfile}"/>
+        <echo>Done.</echo>
+    </target>
+    
+    <target name="jar" depends="compile" description="create a Jar file for the application">
+        <jar destfile="${jarfile}">
+            <fileset dir="${builddir}"/>
+       </jar>
+    </target>
+</project>

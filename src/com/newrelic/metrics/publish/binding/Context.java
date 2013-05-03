@@ -1,4 +1,4 @@
-package com.newrelic.platform.metrics.publish.binding;
+package com.newrelic.metrics.publish.binding;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
