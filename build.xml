@@ -22,8 +22,6 @@
         </javac>
         <echo>Done.</echo>
     </target>
-
-
 	
     <target name="clean">
         <echo>Cleaning project...</echo>
