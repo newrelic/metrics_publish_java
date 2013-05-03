@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project name="newrelic_javaSDK" default="jar" basedir=".">
-    <property name="srcdir" value="com.newrelic.data.in/src/"/>
+<project name="metrics_publish" default="jar" basedir=".">
+    <property name="srcdir" value="src/"/>
     <property name="builddir" value="bin"/>
-    <property name="jarfile" value="newrelic_javaSDK.jar"/>
+    <property name="jarfile" value="releases/current/metrics_publish.jar"/>
     <path id="classpath">
         <pathelement location="lib/json-simple-1.1.1.jar"/>
     </path>
