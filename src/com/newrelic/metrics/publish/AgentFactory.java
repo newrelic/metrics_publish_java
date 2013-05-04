@@ -63,23 +63,7 @@ public abstract class AgentFactory {
 	
 	/* protected */ void createConfiguredAgents(Runner runner) throws ConfigurationException {
         if(configRequired) {
-    		File file = getConfigurationFile();
-            Object parseResult = null;
-            
-    		try {
-    	        FileReader reader = new FileReader(file);        
-    	        JSONParser parser = new JSONParser();
-    	        
-    	        try {
-    	        	parseResult = parser.parse(reader);
-    			} catch (ParseException e) {
-    				throw logAndThrow(Context.getLogger(), "Error parsing config file " + file.getAbsolutePath());
-    			}
-    		} catch(IOException ioEx) {
-    			throw logAndThrow(Context.getLogger(), "Error reading config file " + file.getAbsolutePath());
-    		}
-
-    		JSONArray json = (JSONArray) parseResult;
+            JSONArray json = readJSONFile(getAgentConfigurationFileName());
         
 	        for (int i = 0; i < json.size(); i++) {
 	        	JSONObject obj = (JSONObject) json.get(i);
@@ -92,14 +76,35 @@ public abstract class AgentFactory {
         }
 	}
 
+	public JSONArray readJSONFile(String filename) throws ConfigurationException {
+		Object parseResult = null;
+		
+		File file = getConfigurationFile(filename);
+
+		try {
+	   	    FileReader reader = new FileReader(file);        
+		    JSONParser parser = new JSONParser();
+		    
+		    try {
+		    	parseResult = parser.parse(reader);
+			} catch (ParseException e) {
+				throw logAndThrow(Context.getLogger(), "Error parsing config file " + file.getAbsolutePath());
+			}
+		} catch(IOException ioEx) {
+			throw logAndThrow(Context.getLogger(), "Error reading config file " + file.getAbsolutePath());
+		}
+
+		JSONArray json = (JSONArray) parseResult;
+		return json;
+	}
+
 	private void createAndRegister(Runner runner, Map<String, Object> map) throws ConfigurationException {
     	Agent agent = createConfiguredAgent(map);
     	Context.getLogger().fine("Created agent: " + agent);
     	runner.register(agent);
 	}
 	
-    private File getConfigurationFile() throws ConfigurationException {
-    	String configFileName = getAgentConfigurationFileName();
+    private File getConfigurationFile(String configFileName) throws ConfigurationException {
     	String path = CONFIG_PATH + File.separatorChar + configFileName;
         File file = new File(path);
         if (!file.exists()) {
@@ -111,5 +116,5 @@ public abstract class AgentFactory {
     private ConfigurationException logAndThrow(Logger logger,String message) {
         logger.severe(message);
         return new ConfigurationException(message);
-    }
+    }    
 }
