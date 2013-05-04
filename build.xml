@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project name="metrics_publish" default="jar" basedir=".">
     <property name="srcdir" value="src/"/>
-    <property name="builddir" value="bin"/>
-    <property name="jarfile" value="releases/current/metrics_publish.jar"/>
+    <property name="builddir" value="build"/>
 	<property name="libdir" value="lib"/>
+	<property name="distdir" location="dist"/>
+	<property name="version" value="beta"/>
+    <property name="jarfile" value="${distdir}/lib/metrics_publish-${version}.jar"/>
 	
+    <property name="json-simple.jar" value="${libdir}/json-simple-1.1.1.jar"/>
+
     <path id="classpath">
-        <pathelement location="lib/json-simple-1.1.1.jar"/>
+        <pathelement location="${json-simple.jar}"/>
     </path>
-    
+    	
     <target name="init" depends="clean">
         <echo>Creating directory: ${builddir}</echo>
         <mkdir dir="${builddir}"/>
@@ -29,11 +33,19 @@
         <delete file="${jarfile}"/>
         <echo>Done.</echo>
     </target>
-    
+	
     <target name="jar" depends="compile" description="create a Jar file for the application">
-        <jar destfile="${jarfile}">
+    	<tstamp/>
+    	<jar destfile="${jarfile}">
+            <manifest>
+            	<attribute name="Specification-Title" value="Platform Metric Publish SDK"/>
+            	<attribute name="Specification-Vendor" value="New Relic, Inc."/>
+            	<attribute name="Implementation-Vendor" value="New Relic, Inc."/>                <attribute name="Built-Date" value="${TODAY}"/>
+                <attribute name="Specification-Version" value="${version}"/>   
+            	<attribute name="Implementation-Version" value="${version} ${TODAY}"/> 
+    	    </manifest>
             <fileset dir="${builddir}"/>
-            <zipgroupfileset dir="${libdir}" includes="*.jar"/>        
+            <zipfileset src="${json-simple.jar}"/>        
        </jar>
     </target>
 </project>
