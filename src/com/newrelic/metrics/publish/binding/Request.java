@@ -14,8 +14,6 @@ import java.util.logging.Logger;
 import org.json.simple.JSONObject;
 
 public class Request {
-
-	public static String LAST_JSON;  //Handy for debugging so you can see last JSON sent
 	
 	private final Context context;
 	private final HashMap<ComponentData, LinkedList<MetricData>> metrics = new HashMap<ComponentData, LinkedList<MetricData>>(); 
@@ -49,12 +47,12 @@ public class Request {
             try {
             	Map<String, Object> data = serialize();
             	
-            	LAST_JSON = JSONObject.toJSONString(data);
+            	String json = JSONObject.toJSONString(data);
                 if (logger.isLoggable(Level.FINEST)) {
-                    logger.finest("Sending JSON: " + LAST_JSON);
+                    logger.finest("Sending JSON: " + json);
                 }
             	
-                out.write(LAST_JSON);
+                out.write(json);
             } finally {
                 out.close();
             }
@@ -86,11 +84,11 @@ public class Request {
         }
     }
     
-	protected Map<String, Object> serialize() {		
+	/* package */ Map<String, Object> serialize() {		
 		return context.serialize(this);
 	}	
 
-	protected LinkedList<MetricData> getMetrics(ComponentData component) {
+	/* package */ LinkedList<MetricData> getMetrics(ComponentData component) {
 		if( ! metrics.containsKey(component)) {
 			metrics.put(component, new LinkedList<MetricData>() );
 		}

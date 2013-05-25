@@ -38,7 +38,8 @@ public class Context {
 	}
 	
 	public ComponentData createComponent() {
-		ComponentData componentData = new ComponentData(this);
+		ComponentData componentData = new ComponentData();
+		add(componentData);
 		return componentData;
 	}
 
@@ -60,7 +61,7 @@ public class Context {
 		serviceURI = URI;
 	}
 	
-	protected void add(ComponentData componentData) {
+	private void add(ComponentData componentData) {
 		components.add(componentData);
 	}
 	
@@ -70,7 +71,7 @@ public class Context {
      * @return
      * @throws IOException
      */
-    protected HttpURLConnection createUrlConnectionForOutput() throws IOException {
+    /* package */ HttpURLConnection createUrlConnectionForOutput() throws IOException {
         URL serviceUrl = new URL(serviceURI);
         LOGGER.fine("Metric service url: " + serviceUrl);
         
@@ -84,7 +85,7 @@ public class Context {
         return connection;
     }
 	
-	protected Map<String, Object> serialize(Request request) {		
+	/* package */ Map<String, Object> serialize(Request request) {		
         Map<String, Object> output = new HashMap<String, Object>();
         output.put("agent", agentData.serialize());
         		

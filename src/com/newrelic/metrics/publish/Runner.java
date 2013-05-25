@@ -53,7 +53,6 @@ public class Runner implements Runnable {
 	public void register(Agent agent) {
 		agents.add(agent);
 	}
-	
 
 	public SDKConfiguration getConfiguration() {
 		return config;

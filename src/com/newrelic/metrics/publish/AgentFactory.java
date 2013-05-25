@@ -47,7 +47,6 @@ public abstract class AgentFactory {
 	 * The specific keys and legal values are specific to the domain of the agent.
 	 * Since the values come in as Object, casting and conversion may be required.
 	*/
-	
 	public abstract Agent createConfiguredAgent(Map<String, Object> properties) throws ConfigurationException;
 	
 	/**
@@ -56,12 +55,11 @@ public abstract class AgentFactory {
 	 * Subclasses can override
 	 * @return String file name
 	 */
-	
 	public String getAgentConfigurationFileName() {
 		return agentConfigurationFileName;
 	}
 	
-	/* protected */ void createConfiguredAgents(Runner runner) throws ConfigurationException {
+	/* package */ void createConfiguredAgents(Runner runner) throws ConfigurationException {
         if(configRequired) {
             JSONArray json = readJSONFile(getAgentConfigurationFileName());
         
@@ -76,7 +74,7 @@ public abstract class AgentFactory {
         }
 	}
 
-	public JSONArray readJSONFile(String filename) throws ConfigurationException {
+	private JSONArray readJSONFile(String filename) throws ConfigurationException {
 		Object parseResult = null;
 		
 		File file = getConfigurationFile(filename);

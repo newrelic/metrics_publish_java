@@ -10,9 +10,9 @@ import com.newrelic.metrics.publish.binding.Request;
  */
 public class DataCollector {
 	
-	static final String METRIC_PREFIX = "Component/";
-	static final String DEFAULT_HOST = "host";
-	static final int DEFAULT_PID = 0;
+	private static final String METRIC_PREFIX = "Component/";
+	private static final String DEFAULT_HOST = "host";
+	private static final int DEFAULT_PID = 0;
 	
 	private ComponentData componentData;
 	private Request request;
