@@ -21,7 +21,7 @@ public class SDKConfiguration {
 	private final String propertyFileName = "newrelic.properties";
 	private final String configPath = "config";
 	
-    public SDKConfiguration() throws IOException, ConfigurationException {        
+    public SDKConfiguration() throws ConfigurationException {        
         File file = getConfigurationFile();
         
         Context.getLogger().info("Using configuration file " + file.getAbsolutePath());
@@ -30,13 +30,12 @@ public class SDKConfiguration {
             throw logAndThrow(file.getAbsolutePath() + " does not exist");
         }
         
-        Properties props = new Properties();
-        InputStream inStream = new FileInputStream(file);
-        try {
-            props.load(inStream);
-        } finally {
-            inStream.close();
-        }
+		Properties props = new Properties();
+		try {
+			props = loadProperties(file);
+		} catch(IOException e) {
+			throw logAndThrow("Could not load properties file: " + file.getName());
+		}
         
         licenseKey = props.getProperty("licenseKey");
         if (null == licenseKey) {
@@ -86,6 +85,20 @@ public class SDKConfiguration {
     		serviceURI = args[1];
     	}    		
     }
+    
+	private Properties loadProperties(File file) throws IOException {
+		Properties props = new Properties();
+		InputStream inStream = null;
+		try {
+			inStream = new FileInputStream(file);
+			props.load(inStream);
+		} finally {
+			if (inStream != null) {
+				inStream.close();
+			}
+		}
+		return props;
+	}
     
     private File getConfigurationFile() throws ConfigurationException {
 //		TODO system property for config path
