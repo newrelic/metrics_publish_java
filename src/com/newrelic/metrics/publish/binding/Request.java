@@ -30,10 +30,10 @@ public class Request {
 	}	
 
 	public MetricData addMetric(ComponentData component, String name, int value) {
-		return addMetric(component, new MetricData(component, name, value));
+		return addMetric(component, new MetricData(name, value));
 	}
 	public MetricData addMetric(ComponentData component, String name, float value) {
-		return addMetric(component, new MetricData(component, name, value));
+		return addMetric(component, new MetricData(name, value));
 	}
 	
     public void send() {
