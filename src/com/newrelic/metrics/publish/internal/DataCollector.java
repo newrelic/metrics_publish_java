@@ -28,9 +28,7 @@ public class DataCollector {
 		context.agentData.host = DEFAULT_HOST;
 		context.agentData.version = agent.getVersion();
 		context.agentData.pid = DEFAULT_PID;
-		componentData = context.createComponent();
-		componentData.guid = agent.getGUID();
-		componentData.name = agent.getComponentHumanLabel();
+		componentData = context.createComponent(agent.getComponentHumanLabel(), agent.getGUID());
 		//TODO duration should be computed from time since last poll
 //		componentData.duration = pollInterval;
 	}

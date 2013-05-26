@@ -3,15 +3,22 @@ package com.newrelic.metrics.publish.binding;
 import java.util.HashMap;
 
 public class ComponentData {
-	public String name;
-	public String guid;
 	
-	public String toString() {
-		return "ComponentData(" + name + ":" + guid + ")";
+	private final String name;
+	private final String guid;
+	
+	/* package */ ComponentData(String name, String guid) {
+		super();
+		this.name = name;
+		this.guid = guid;
 	}
 	
-	/* package */ ComponentData() {
-		super();
+	public String getName() {
+		return name;
+	}
+	
+	public String getGUID() {
+		return guid;
 	}
 
 	/* package */ HashMap<String,Object> serialize(Request request) {
@@ -29,4 +36,8 @@ public class ComponentData {
 		
 		return output;
 	}	
+	
+	public String toString() {
+		return "ComponentData(" + name + ":" + guid + ")";
+	}
 }

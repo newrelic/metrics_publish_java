@@ -32,6 +32,7 @@ public class Request {
 	public MetricData addMetric(ComponentData component, String name, int value) {
 		return addMetric(component, new MetricData(name, value));
 	}
+	
 	public MetricData addMetric(ComponentData component, String name, float value) {
 		return addMetric(component, new MetricData(name, value));
 	}
@@ -96,7 +97,7 @@ public class Request {
 	}
 	
 	private MetricData addMetric(ComponentData component, MetricData metric) {
-		Context.getLogger().finest(component.guid + " " + metric.name + ":" + metric.value);
+		Context.getLogger().finest(component.getGUID() + " " + metric.name + ":" + metric.value);
 		getMetrics(component).add(metric);
 		return metric;
 	}
