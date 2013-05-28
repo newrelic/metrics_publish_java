@@ -1,24 +1,27 @@
 package com.newrelic.metrics.publish.binding;
 
 import java.util.HashMap;
-// import java.util.LinkedList;
 
 public class ComponentData {
-	public String name;
-	public String guid;
-	protected Context context;
 	
-	public String toString() {
-		return "ComponentData(" + name + ":" + guid + ")";
+	private final String name;
+	private final String guid;
+	
+	/* package */ ComponentData(String name, String guid) {
+		super();
+		this.name = name;
+		this.guid = guid;
 	}
 	
-	protected ComponentData(Context context) {
-		super();
-		this.context = context;
-		context.add(this);
+	public String getName() {
+		return name;
+	}
+	
+	public String getGUID() {
+		return guid;
 	}
 
-	protected HashMap<String,Object> serialize(Request request) {
+	/* package */ HashMap<String,Object> serialize(Request request) {
 		HashMap<String, Object> output = new HashMap<String, Object>();
 		output.put("name", name);
 		output.put("guid", guid);	
@@ -33,4 +36,8 @@ public class ComponentData {
 		
 		return output;
 	}	
+	
+	public String toString() {
+		return "ComponentData(" + name + ":" + guid + ")";
+	}
 }

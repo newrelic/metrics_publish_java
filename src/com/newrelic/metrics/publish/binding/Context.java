@@ -37,8 +37,9 @@ public class Context {
 		components = new LinkedList<ComponentData>();
 	}
 	
-	public ComponentData createComponent() {
-		ComponentData componentData = new ComponentData(this);
+	public ComponentData createComponent(String name, String guid) {
+		ComponentData componentData = new ComponentData(name, guid);
+		components.add(componentData);
 		return componentData;
 	}
 
@@ -60,17 +61,13 @@ public class Context {
 		serviceURI = URI;
 	}
 	
-	protected void add(ComponentData componentData) {
-		components.add(componentData);
-	}
-	
     /*
      * Create an http url connection to post data to the New Relic service.
      *  
      * @return
      * @throws IOException
      */
-    protected HttpURLConnection createUrlConnectionForOutput() throws IOException {
+    /* package */ HttpURLConnection createUrlConnectionForOutput() throws IOException {
         URL serviceUrl = new URL(serviceURI);
         LOGGER.fine("Metric service url: " + serviceUrl);
         
@@ -84,7 +81,7 @@ public class Context {
         return connection;
     }
 	
-	protected Map<String, Object> serialize(Request request) {		
+	/* package */ Map<String, Object> serialize(Request request) {		
         Map<String, Object> output = new HashMap<String, Object>();
         output.put("agent", agentData.serialize());
         		

@@ -7,11 +7,11 @@ public class AgentData {
 	public String version;
 	public int pid;
 	
-	protected AgentData() {
+	/* package */ AgentData() {
 		super();
 	}
 	
-	protected HashMap<String, Object> serialize() {
+	/* package */ HashMap<String, Object> serialize() {
 		HashMap<String, Object> output = new HashMap<String, Object>();
 		output.put("host", host);
 		output.put("version", version);
