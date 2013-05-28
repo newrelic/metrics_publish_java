@@ -4,7 +4,8 @@
     <property name="builddir" value="build"/>
 	<property name="libdir" value="lib"/>
 	<property name="distdir" location="dist"/>
-	<property name="version" value="beta"/>
+	
+	<property name="version" value="0.2.0"/>
     <property name="jarfile" value="${distdir}/metrics_publish-${version}.jar"/>
 	
     <property name="json-simple.jar" value="${libdir}/json-simple-1.1.1.jar"/>
@@ -40,7 +41,8 @@
             <manifest>
             	<attribute name="Specification-Title" value="Platform Metric Publish SDK"/>
             	<attribute name="Specification-Vendor" value="New Relic, Inc."/>
-            	<attribute name="Implementation-Vendor" value="New Relic, Inc."/>                <attribute name="Built-Date" value="${TODAY}"/>
+            	<attribute name="Implementation-Vendor" value="New Relic, Inc."/>                
+            	<attribute name="Built-Date" value="${TODAY}"/>
                 <attribute name="Specification-Version" value="${version}"/>   
             	<attribute name="Implementation-Version" value="${version} ${TODAY}"/> 
     	    </manifest>
