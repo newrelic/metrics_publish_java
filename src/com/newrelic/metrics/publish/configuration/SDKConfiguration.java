@@ -21,7 +21,8 @@ public class SDKConfiguration {
 	private final String propertyFileName = "newrelic.properties";
 	private final String configPath = "config";
 	
-    public SDKConfiguration() throws IOException, ConfigurationException {        
+	//TODO: consider moving Configuration classes to package level and making package-private
+    public SDKConfiguration() throws ConfigurationException {        
         File file = getConfigurationFile();
         
         Context.getLogger().info("Using configuration file " + file.getAbsolutePath());
@@ -30,13 +31,12 @@ public class SDKConfiguration {
             throw logAndThrow(file.getAbsolutePath() + " does not exist");
         }
         
-        Properties props = new Properties();
-        InputStream inStream = new FileInputStream(file);
-        try {
-            props.load(inStream);
-        } finally {
-            inStream.close();
-        }
+		Properties props = new Properties();
+		try {
+			props = loadProperties(file);
+		} catch(IOException e) {
+			throw logAndThrow("Could not load properties file: " + file.getName());
+		}
         
         licenseKey = props.getProperty("licenseKey");
         if (null == licenseKey) {
@@ -72,35 +72,35 @@ public class SDKConfiguration {
 	public String internalGetServiceURI() {
 		return serviceURI;
 	}
-	
-    /* 
-	 * For debug purposes only, not for general usage by clients of the SDK
-     */
-    public void internalProcessDebugArgs(String[] args) {
-		//first is the license key
-    	if(args.length > 0) {
-    		setLicenseKey(args[0]);
-    	}
-		//second is the collector
-    	if(args.length == 2) {
-    		serviceURI = args[1];
-    	}    		
-    }
+    
+	private Properties loadProperties(File file) throws IOException {
+		Properties props = new Properties();
+		InputStream inStream = null;
+		try {
+			inStream = new FileInputStream(file);
+			props.load(inStream);
+		} finally {
+			if (inStream != null) {
+				inStream.close();
+			}
+		}
+		return props;
+	}
     
     private File getConfigurationFile() throws ConfigurationException {
 //		TODO system property for config path
 //      String path = System.getProperty("com.newrelic.platform.config");        
-    	String path = null;
-        if (path == null) {
-            path = configPath + File.separatorChar + propertyFileName;
-            File file = new File(path);
-            if (!file.exists()) {
-            	throw logAndThrow("Cannot find config file " + path);
-            }
-            return file;
-        } else {
-            return new File(path);    
+//    	String path = null;
+//        if (path == null) {
+        String path = configPath + File.separatorChar + propertyFileName;
+        File file = new File(path);
+        if (!file.exists()) {
+        	throw logAndThrow("Cannot find config file " + path);
         }
+        return file;
+//        } else {
+//            return new File(path);    
+//        }
 	}
     
     private ConfigurationException logAndThrow(String message) {

@@ -40,7 +40,7 @@ public class Runner implements Runnable {
       
         try {
             config = new SDKConfiguration();
-        } catch (Exception e) {
+        } catch (ConfigurationException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             throw new RuntimeException(e);
         }
@@ -53,7 +53,6 @@ public class Runner implements Runnable {
 	public void register(Agent agent) {
 		agents.add(agent);
 	}
-	
 
 	public SDKConfiguration getConfiguration() {
 		return config;
