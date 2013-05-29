@@ -3,6 +3,7 @@ package com.newrelic.metrics.publish;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -70,7 +71,7 @@ public abstract class AgentFactory {
 	        	createAndRegister(runner, map);
 			}
         } else {
-        	createAndRegister(runner, null);
+        	createAndRegister(runner, new HashMap<String, Object>());
         }
 	}
 

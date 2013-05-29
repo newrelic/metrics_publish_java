@@ -21,7 +21,7 @@ import com.newrelic.metrics.publish.configuration.SDKConfiguration;
  * @author kevin-mcguire
  *
  */
-public class Runner implements Runnable {
+public class Runner {
 
 	private List<Agent> agents;
 	private final SDKConfiguration config;
@@ -63,7 +63,7 @@ public class Runner implements Runnable {
         pollInterval = config.getPollInterval();
 
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();  
-        executor.scheduleAtFixedRate(this, 0, pollInterval, TimeUnit.SECONDS);  //schedule ourself as the runnable command
+        executor.scheduleAtFixedRate(new PollAgentsRunnable(), 0, pollInterval, TimeUnit.SECONDS);  //schedule ourself as the runnable command
         
         Context.getLogger().info("New Relic monitor started");
         
@@ -72,23 +72,6 @@ public class Runner implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-    
-	/**
-     * Collect and report metric data.
-     */
-    @Override
-    public void run() {
-    	Context.getLogger().fine("Harvest and report data");
-        for (Iterator<Agent> iterator = agents.iterator(); iterator.hasNext();) {
-			Agent agent = iterator.next();
-        	Request request = new Request(agent.getCollector().getContext(), pollInterval);
-        	//todo set poll interval
-        	agent.getCollector().setRequest(request);
-	        agent.pollCycle();
-	        request.send();			
-        	agent.getCollector().setRequest(null); //make sure we're not reusing the request
-		}
     }
 
 	private void createAgents() throws ConfigurationException {
@@ -115,5 +98,29 @@ public class Runner implements Runnable {
 	        	agent.getCollector().getContext().internalSetServiceURI(config.internalGetServiceURI());
 	        }
 		}
+    }
+    
+    /**
+     * Inner runnable class for polling agents from ScheduledExecutor
+     * @author jstenhouse
+     */
+    private class PollAgentsRunnable implements Runnable {
+    	
+    	/**
+         * Collect and report metric data.
+         */
+        @Override
+        public void run() {
+        	Context.getLogger().fine("Harvest and report data");
+            for (Iterator<Agent> iterator = agents.iterator(); iterator.hasNext();) {
+    			Agent agent = iterator.next();
+            	Request request = new Request(agent.getCollector().getContext(), pollInterval);
+            	//todo set poll interval
+            	agent.getCollector().setRequest(request);
+    	        agent.pollCycle();
+    	        request.send();			
+            	agent.getCollector().setRequest(null); //make sure we're not reusing the request
+    		}
+        }
     }
 }
