@@ -32,7 +32,10 @@ public abstract class Agent {
 	public String getVersion() {
 		return version;
 	}
-		
+	
+	/**
+	 * Subclasses may override but must call super.
+	 */
 	public void prepareToRun() {
 		//This needs to be done after being configured to ensure the binding model created by the DataCollector
 		//has the most recent values from this
