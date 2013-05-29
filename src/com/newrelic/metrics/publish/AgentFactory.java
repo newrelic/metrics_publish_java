@@ -74,7 +74,7 @@ public abstract class AgentFactory {
         }
 	}
 
-	private JSONArray readJSONFile(String filename) throws ConfigurationException {
+	public JSONArray readJSONFile(String filename) throws ConfigurationException {
 		Object parseResult = null;
 		
 		File file = getConfigurationFile(filename);
