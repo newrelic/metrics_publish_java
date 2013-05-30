@@ -4,21 +4,14 @@ import java.util.HashMap;
 
 public class ComponentData {
 	
-	private final String name;
-	private final String guid;
+	public String name;
+	public String guid;
+	/* package */ Context context;
 	
-	/* package */ ComponentData(String name, String guid) {
+	/* package */ ComponentData(Context context) {
 		super();
-		this.name = name;
-		this.guid = guid;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public String getGUID() {
-		return guid;
+		this.context = context;
+		context.add(this);
 	}
 
 	/* package */ HashMap<String,Object> serialize(Request request) {
