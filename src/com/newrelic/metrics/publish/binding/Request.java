@@ -98,7 +98,7 @@ public class Request {
         } else {
         	// read server response
         	String responseBody = getServerResponse(connection.getInputStream());
-        	if(responseBody == null || EMPTY_STRING.equals(responseBody)) {
+        	if (responseBody == null || EMPTY_STRING.equals(responseBody)) {
         		Context.getLogger().info("Failed server response: no response");
         	} else { 
         		// parse json response for status message
@@ -143,7 +143,7 @@ public class Request {
     	Object jsonObj = JSONValue.parse(responseBody);
     	JSONObject json = (JSONObject) jsonObj;
     	Object status = json.get(STATUS);
-    	if(status != null) {
+    	if (status != null) {
     		return (String) status;
     	} else {
     		return null;
