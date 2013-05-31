@@ -40,7 +40,7 @@ public class Runner {
       
         try {
             config = new SDKConfiguration();
-        } catch (ConfigurationException e) {
+        } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             throw new RuntimeException(e);
         }

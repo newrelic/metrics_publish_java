@@ -5,11 +5,17 @@ import java.util.HashMap;
 public class MetricData {
 	/* package */ String name;
 	/* package */ Number value;  //must be int or float
+	/* package */ ComponentData componentData;
 	
-	/* package */ MetricData(String name, Number value) {
+	/* package */ MetricData(ComponentData componentData, String name, Number value) {
 		super();
+		init(componentData, name, value);
+	}
+	
+	/* package */ void init(ComponentData componentData, String name, Number value) {
 		this.name = name;
 		this.value = value;
+		this.componentData = componentData;
 	}
 	
 	/* package */ void serialize(HashMap<String, Object> data) {

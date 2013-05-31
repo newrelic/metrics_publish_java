@@ -37,9 +37,9 @@ public class Context {
 		components = new LinkedList<ComponentData>();
 	}
 	
-	public ComponentData createComponent(String name, String guid) {
-		ComponentData componentData = new ComponentData(name, guid);
-		components.add(componentData);
+	public ComponentData createComponent() {
+		ComponentData componentData = new ComponentData(this);
+		add(componentData);
 		return componentData;
 	}
 
@@ -59,6 +59,10 @@ public class Context {
 	 */
 	public void internalSetServiceURI(String URI) {
 		serviceURI = URI;
+	}
+	
+	/* package */ void add(ComponentData componentData) {
+		components.add(componentData);
 	}
 	
     /*
