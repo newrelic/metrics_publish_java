@@ -94,7 +94,7 @@ public class Request {
   
         // do not log 503 responses
         if (responseCode == 503) {
-        	Context.getLogger().info("Collector temporarily unavailable...continuing");
+        	Context.getLogger().fine("Collector temporarily unavailable...continuing");
         } else {
         	// read server response
         	String responseBody = getServerResponse(connection.getInputStream());
@@ -104,7 +104,7 @@ public class Request {
         		// parse json response for status message
         		String statusMessage = getStatusMessage(responseBody);
         		if (responseCode == 200 && OK_STATUS.equals(statusMessage)) {
-        			Context.getLogger().info("Server response: " + responseCode + ", " + responseBody);
+        			Context.getLogger().fine("Server response: " + responseCode + ", " + responseBody);
         		} else {
         			// all other response codes will fail
         			Context.getLogger().info("Failed server response: " + responseCode + ", " + responseBody);
