@@ -20,6 +20,7 @@ public class Request {
     private static final String EMPTY_STRING = "";
     private static final String STATUS = "status";
     private static final String OK_STATUS = "ok";
+    private static final String DISABLE_NEW_RELIC = "DISABLE_NEW_RELIC";
 	
 	private final Context context;
 	private final HashMap<ComponentData, LinkedList<MetricData>> metrics = new HashMap<ComponentData, LinkedList<MetricData>>(); 
@@ -93,17 +94,26 @@ public class Request {
     	int responseCode = connection.getResponseCode();
   
         // do not log 503 responses
-        if (responseCode == 503) {
+        if (responseCode == HttpURLConnection.HTTP_UNAVAILABLE) {
         	Context.getLogger().fine("Collector temporarily unavailable...continuing");
         } else {
+        	
+        	// valid response codes are less than 400 - bad request
+        	// valid responses are read from inputStream, error responses must be read from errorStream 
+        	InputStream responseStream = (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) ? connection.getInputStream() : connection.getErrorStream();     	
         	// read server response
-        	String responseBody = getServerResponse(connection.getInputStream());
+        	String responseBody = getServerResponse(responseStream);
+        	
         	if (responseBody == null || EMPTY_STRING.equals(responseBody)) {
         		Context.getLogger().info("Failed server response: no response");
-        	} else { 
+        	} else if (responseCode == HttpURLConnection.HTTP_FORBIDDEN && DISABLE_NEW_RELIC.equals(responseBody)) {
+        		// Remote disabling by New Relic -- exit
+        		Context.getLogger().warning("Agent has been disabled remotely by New Relic");
+        		System.exit(1);
+            } else { 
         		// parse json response for status message
         		String statusMessage = getStatusMessage(responseBody);
-        		if (responseCode == 200 && OK_STATUS.equals(statusMessage)) {
+        		if (responseCode == HttpURLConnection.HTTP_OK && OK_STATUS.equals(statusMessage)) {
         			Context.getLogger().fine("Server response: " + responseCode + ", " + responseBody);
         		} else {
         			// all other response codes will fail
