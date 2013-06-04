@@ -94,42 +94,82 @@ public class Request {
     	int responseCode = connection.getResponseCode();
   
         // do not log 503 responses
-        if (responseCode == HttpURLConnection.HTTP_UNAVAILABLE) {
+        if (isCollectorUnavailable(responseCode)) {
         	Context.getLogger().fine("Collector temporarily unavailable...continuing");
-        } else {
-        	
-        	// valid response codes are less than 400 - bad request
-        	// valid responses are read from inputStream, error responses must be read from errorStream 
-        	InputStream responseStream = (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) ? connection.getInputStream() : connection.getErrorStream();     	
+        } else { 	
         	// read server response
-        	String responseBody = getServerResponse(responseStream);
+        	String responseBody = getServerResponse(responseCode, connection);
         	
-        	if (responseBody == null || EMPTY_STRING.equals(responseBody)) {
+        	if (isResponseEmpty(responseBody)) {
         		Context.getLogger().info("Failed server response: no response");
-        	} else if (responseCode == HttpURLConnection.HTTP_FORBIDDEN && DISABLE_NEW_RELIC.equals(responseBody)) {
+        	} else if (isRemotelyDisabled(responseCode, responseBody)) {
         		// Remote disabling by New Relic -- exit
         		Context.getLogger().warning("Agent has been disabled remotely by New Relic");
         		System.exit(1);
-            } else { 
-        		// parse json response for status message
-        		String statusMessage = getStatusMessage(responseBody);
-        		if (responseCode == HttpURLConnection.HTTP_OK && OK_STATUS.equals(statusMessage)) {
-        			Context.getLogger().fine("Server response: " + responseCode + ", " + responseBody);
-        		} else {
-        			// all other response codes will fail
-        			Context.getLogger().info("Failed server response: " + responseCode + ", " + responseBody);
-        		}
+            } else if (isResponseOk(responseCode, responseBody)) {
+        		Context.getLogger().fine("Server response: " + responseCode + ", " + responseBody);
+            } else {
+        		// all other response codes will fail
+        		Context.getLogger().info("Failed server response: " + responseCode + ", " + responseBody);
         	}
         }
     }
     
     /**
+     * Checks if the Collector is currently unavailable.
+     * A 503 response code (HTTP_UNAVAILABLE) from the Collector is an unavailable response.
+     * @param responseCode
+     * @return boolean
+     */
+    private boolean isCollectorUnavailable(int responseCode) {
+    	return responseCode == HttpURLConnection.HTTP_UNAVAILABLE;
+    }
+    
+    /**
+     * Checks if the Collector response is empty
+     * @param responseBody
+     * @return boolean
+     */
+    private boolean isResponseEmpty(String responseBody) {
+    	return responseBody == null || EMPTY_STRING.equals(responseBody);
+    }
+    
+    /**
+     * Checks if the agent has been remotely disabled by the Collector.
+     * A 403 response code (HTTP_FORBIDDEN) with DISABLE_NEW_RELIC as the response body
+     * indicate that the agent should be remotely disabled.
+     * @param responseCode
+     * @param responseBody
+     * @return boolean
+     */
+    private boolean isRemotelyDisabled(int responseCode, String responseBody) {
+    	return responseCode == HttpURLConnection.HTTP_FORBIDDEN && DISABLE_NEW_RELIC.equals(responseBody);
+    }
+    
+    /**
+     * Checks if the Collector response is Ok.
+     * A 200 response code (HTTP_OK) with status of "ok" in the response body is an Ok response.
+     * @param responseCode
+     * @param responseBody
+     * @return boolean
+     */
+    private boolean isResponseOk(int responseCode, String responseBody) {
+    	// parse json response for status message
+		String statusMessage = getStatusMessage(responseBody);
+    	return responseCode == HttpURLConnection.HTTP_OK && OK_STATUS.equals(statusMessage);
+    }
+    
+    /**
      * Get server response from provided input stream
-     * @param input
+     * @param responseCode
+     * @param connection
      * @return String the server response
      * @throws IOException
      */
-    private String getServerResponse(InputStream input) throws IOException {
+    private String getServerResponse(int responseCode, HttpURLConnection connection) throws IOException {
+    	
+    	InputStream input = getResponseStream(responseCode, connection);
+    	
     	StringBuilder builder = new StringBuilder();
     	BufferedReader in = new BufferedReader(new InputStreamReader(input));
 		try {
@@ -141,6 +181,19 @@ public class Request {
 			in.close();
 		}
     	return builder.toString();
+    }
+    
+    /**
+     * Get an InputStream from the server response.
+     * Valid responses have response codes less than 400 (bad request).
+     * Valid responses are read from getInputStream(), while error responses must be read from getErrorStream()
+     * @param responseCode
+     * @param connection
+     * @return InputStream
+     * @throws IOException
+     */
+    private InputStream getResponseStream(int responseCode, HttpURLConnection connection) throws IOException {
+    	return (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) ? connection.getInputStream() : connection.getErrorStream();
     }
     
     /**
