@@ -25,7 +25,7 @@ public class SDKConfiguration {
     public SDKConfiguration() throws IOException, ConfigurationException {        
         File file = getConfigurationFile();
         
-        Context.getLogger().info("Using configuration file " + file.getAbsolutePath());
+        System.out.println("INFO: Using configuration file " + file.getAbsolutePath());
         
         if (!file.exists()) {
             throw logAndThrow(file.getAbsolutePath() + " does not exist");

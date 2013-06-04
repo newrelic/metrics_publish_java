@@ -56,9 +56,7 @@ public class Request {
             	Map<String, Object> data = serialize();
             	
             	String json = JSONObject.toJSONString(data);
-                if (logger.isLoggable(Level.FINEST)) {
-                    logger.finest("Sending JSON: " + json);
-                }
+                logger.fine("Sending JSON: " + json);
             	
                 out.write(json);
             } finally {
@@ -77,7 +75,7 @@ public class Request {
                 try {
                    logger.info("Response: " + connection.getResponseCode() + " : " + connection.getResponseMessage() );
                  } catch (IOException e) {
-                    logger.log(Level.FINER, ex.getMessage(), ex);
+                    logger.log(Level.FINE, ex.getMessage(), ex);
                 }
             }
         } finally {
@@ -225,7 +223,7 @@ public class Request {
 	}
 	
 	private MetricData addMetric(ComponentData component, MetricData metric) {
-		Context.getLogger().finest(component.guid + " " + metric.name + ":" + metric.value);
+		Context.getLogger().fine(component.guid + " " + metric.name + ":" + metric.value);
 		getMetrics(component).add(metric);
 		return metric;
 	}

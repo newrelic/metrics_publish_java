@@ -23,7 +23,7 @@ public abstract class Agent {
 	
 	//You can but don't need to override this
 	public void setupMetrics() {
-		Context.getLogger().finest("setupMetrics");
+		Context.getLogger().fine("setupMetrics");
 	}
 	
 	public String getGUID() {
@@ -43,12 +43,12 @@ public abstract class Agent {
 	}
 	
 	public void reportMetric(String metricName, String units, int value) {
-		Context.getLogger().finest("Reporting int metric: " + metricName);
+		Context.getLogger().fine("Reporting int metric: " + metricName);
 		collector.addData(metricName, units, value);
 	}
 
 	public void reportMetric(String metricName, String units, float value) {
-		Context.getLogger().finest("Reporting float metric: " + metricName);
+		Context.getLogger().fine("Reporting float metric: " + metricName);
 		collector.addData(metricName, units, value);
 	}
 
