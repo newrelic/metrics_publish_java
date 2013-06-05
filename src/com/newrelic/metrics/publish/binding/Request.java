@@ -102,7 +102,7 @@ public class Request {
         		Context.getLogger().info("Failed server response: no response");
         	} else if (isRemotelyDisabled(responseCode, responseBody)) {
         		// Remote disabling by New Relic -- exit
-        		Context.getLogger().warning("Agent has been disabled remotely by New Relic");
+        		System.out.println("WARNING: Agent has been disabled remotely by New Relic");
         		System.exit(1);
             } else if (isResponseOk(responseCode, responseBody)) {
         		Context.getLogger().fine("Server response: " + responseCode + ", " + responseBody);
