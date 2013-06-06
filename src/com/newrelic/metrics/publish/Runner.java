@@ -8,7 +8,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.newrelic.metrics.publish.binding.Context;
 import com.newrelic.metrics.publish.binding.Request;
@@ -31,17 +30,11 @@ public class Runner {
 	public Runner() {
 		super();
 		agents = new LinkedList<Agent>();
-
-		Logger logger = Context.getLogger();
-        boolean loggerConfigured = logger.getHandlers().length > 0; 
-        if (!loggerConfigured) {
-            logger.warning("The logger is not configured");
-        }   
       
         try {
             config = new SDKConfiguration();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            Context.getLogger().log(Level.SEVERE, e.getMessage(), e);
             throw new RuntimeException(e);
         }
 	}
@@ -65,12 +58,12 @@ public class Runner {
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();  
         executor.scheduleAtFixedRate(new PollAgentsRunnable(), 0, pollInterval, TimeUnit.SECONDS);  //schedule ourself as the runnable command
         
-        Context.getLogger().info("New Relic monitor started");
+        System.out.println("INFO: New Relic monitor started");
         
         try {
             executor.awaitTermination(Long.MAX_VALUE, TimeUnit.HOURS);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+        	Context.getLogger().log(Level.SEVERE, e.getMessage(), e);
         }
     }
 

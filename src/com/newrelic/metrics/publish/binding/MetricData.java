@@ -19,7 +19,7 @@ public class MetricData {
 	}
 	
 	/* package */ void serialize(HashMap<String, Object> data) {
-		Context.getLogger().finest("Metric: " + name + " value: " + value);
+		Context.getLogger().fine("Metric: " + name + " value: " + value);
 		data.put(name, value);	
 	}
 	
