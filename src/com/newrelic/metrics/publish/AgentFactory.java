@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -87,10 +86,10 @@ public abstract class AgentFactory {
 		    try {
 		    	parseResult = parser.parse(reader);
 			} catch (ParseException e) {
-				throw logAndThrow(Context.getLogger(), "Error parsing config file " + file.getAbsolutePath());
+				throw logAndThrow("Error parsing config file " + file.getAbsolutePath());
 			}
 		} catch(IOException ioEx) {
-			throw logAndThrow(Context.getLogger(), "Error reading config file " + file.getAbsolutePath());
+			throw logAndThrow("Error reading config file " + file.getAbsolutePath());
 		}
 
 		JSONArray json = (JSONArray) parseResult;
@@ -107,13 +106,13 @@ public abstract class AgentFactory {
     	String path = CONFIG_PATH + File.separatorChar + configFileName;
         File file = new File(path);
         if (!file.exists()) {
-        	throw logAndThrow(Context.getLogger(), "Cannot find config file " + path);
+        	throw logAndThrow("Cannot find config file " + path);
         }
         return file;
 	}
     
-    private ConfigurationException logAndThrow(Logger logger,String message) {
-        logger.severe(message);
+    private ConfigurationException logAndThrow(String message) {
+        Context.getLogger().severe(message);
         return new ConfigurationException(message);
     }    
 }
