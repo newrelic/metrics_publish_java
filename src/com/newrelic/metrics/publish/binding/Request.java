@@ -45,9 +45,10 @@ public class Request {
 	}
 	
     public void send() {
-        
-        if (!metrics.isEmpty()) {        
-        
+        // do not send an empty request
+        if (metrics.isEmpty()) {
+            Context.getLogger().fine("No metrics were reported for this poll cycle");
+        } else {
             HttpURLConnection connection = null;
             Logger logger = Context.getLogger();
             
