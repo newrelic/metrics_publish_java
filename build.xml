@@ -5,7 +5,7 @@
 	<property name="libdir" value="lib"/>
 	<property name="distdir" location="dist"/>
 	
-	<property name="version" value="0.2.3"/>
+	<property name="version" value="0.2.4"/>
     <property name="jarfile" value="${distdir}/metrics_publish-${version}.jar"/>
 	
     <property name="json-simple.jar" value="${libdir}/json-simple-1.1.1.jar"/>

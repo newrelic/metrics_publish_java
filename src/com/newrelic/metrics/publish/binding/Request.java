@@ -45,41 +45,46 @@ public class Request {
 	}
 	
     public void send() {
-        HttpURLConnection connection = null;
-        Logger logger = Context.getLogger();
-        
-        try {
-            connection = context.createUrlConnectionForOutput();
+        // do not send an empty request
+        if (metrics.isEmpty()) {
+            Context.getLogger().fine("No metrics were reported for this poll cycle");
+        } else {
+            HttpURLConnection connection = null;
+            Logger logger = Context.getLogger();
             
-            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
             try {
-            	Map<String, Object> data = serialize();
-            	
-            	String json = JSONObject.toJSONString(data);
-                logger.fine("Sending JSON: " + json);
-            	
-                out.write(json);
-            } finally {
-                out.close();
-            }
-            
-            // process and log response from the collector
-            processResponse(connection);
-        } 
-        catch (Exception ex) 
-        {
-            logger.severe("An error occurred communicating with the New Relic service - " + ex.getMessage());
-            logger.log(Level.FINE, ex.getMessage(), ex);
-
-            if (connection != null) {
+                connection = context.createUrlConnectionForOutput();
+                
+                OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
                 try {
-                   logger.info("Response: " + connection.getResponseCode() + " : " + connection.getResponseMessage() );
-                 } catch (IOException e) {
-                    logger.log(Level.FINE, ex.getMessage(), ex);
+                	Map<String, Object> data = serialize();
+                	
+                	String json = JSONObject.toJSONString(data);
+                    logger.fine("Sending JSON: " + json);
+                	
+                    out.write(json);
+                } finally {
+                    out.close();
                 }
+                
+                // process and log response from the collector
+                processResponse(connection);
+            } 
+            catch (Exception ex) 
+            {
+                logger.severe("An error occurred communicating with the New Relic service - " + ex.getMessage());
+                logger.log(Level.FINE, ex.getMessage(), ex);
+    
+                if (connection != null) {
+                    try {
+                       logger.info("Response: " + connection.getResponseCode() + " : " + connection.getResponseMessage() );
+                     } catch (IOException e) {
+                        logger.log(Level.FINE, ex.getMessage(), ex);
+                    }
+                }
+            } finally {
+                connection.disconnect();
             }
-        } finally {
-            connection.disconnect();
         }
     }
     
