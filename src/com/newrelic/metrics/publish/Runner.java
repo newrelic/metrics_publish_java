@@ -4,8 +4,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -56,14 +58,24 @@ public class Runner {
         pollInterval = config.getPollInterval();
 
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();  
-        executor.scheduleAtFixedRate(new PollAgentsRunnable(), 0, pollInterval, TimeUnit.SECONDS);  //schedule ourself as the runnable command
+        ScheduledFuture<?> future = executor.scheduleAtFixedRate(new PollAgentsRunnable(), 0, pollInterval, TimeUnit.SECONDS);  //schedule pollAgentsRunnable as the runnable command
         
         System.out.println("INFO: New Relic monitor started");
         
         try {
-            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.HOURS);
+            // getting the future's response will block forever unless an exception is thrown
+            future.get();
+        } catch (ExecutionException e) {
+            System.err.println("SEVERE: An error has occurred");
+            e.printStackTrace();
         } catch (InterruptedException e) {
-        	Context.getLogger().log(Level.SEVERE, e.getMessage(), e);
+            System.err.println("SEVERE: An error has occurred");
+            e.printStackTrace();
+        } finally {
+            // clean up and exit
+            future.cancel(true);
+            executor.shutdown();
+            System.exit(1);
         }
     }
 
