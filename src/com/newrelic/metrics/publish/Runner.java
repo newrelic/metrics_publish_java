@@ -58,22 +58,17 @@ public class Runner {
         pollInterval = config.getPollInterval();
 
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();  
-        ScheduledFuture<?> future = executor.scheduleAtFixedRate(new PollAgentsRunnable(), 0, pollInterval, TimeUnit.SECONDS);  //schedule pollAgentsRunnable as the runnable command
+        executor.scheduleAtFixedRate(new PollAgentsRunnable(), 0, pollInterval, TimeUnit.SECONDS);  //schedule pollAgentsRunnable as the runnable command
         
         System.out.println("INFO: New Relic monitor started");
         
         try {
-            // getting the future's response will block forever unless an exception is thrown
-            future.get();
-        } catch (ExecutionException e) {
-            System.err.println("SEVERE: An error has occurred");
-            e.printStackTrace();
+           executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             System.err.println("SEVERE: An error has occurred");
             e.printStackTrace();
         } finally {
             // clean up and exit
-            future.cancel(true);
             executor.shutdown();
             System.exit(1);
         }
@@ -116,16 +111,22 @@ public class Runner {
          */
         @Override
         public void run() {
-        	Context.getLogger().fine("Harvest and report data");
-            for (Iterator<Agent> iterator = agents.iterator(); iterator.hasNext();) {
-    			Agent agent = iterator.next();
-            	Request request = new Request(agent.getCollector().getContext(), pollInterval);
-            	//todo set poll interval
-            	agent.getCollector().setRequest(request);
-    	        agent.pollCycle();
-    	        request.send();			
-            	agent.getCollector().setRequest(null); //make sure we're not reusing the request
-    		}
+            try {
+            	Context.getLogger().fine("Harvest and report data");
+                for (Iterator<Agent> iterator = agents.iterator(); iterator.hasNext();) {
+        			Agent agent = iterator.next();
+                	Request request = new Request(agent.getCollector().getContext(), pollInterval);
+                	//todo set poll interval
+                	agent.getCollector().setRequest(request);
+        	        agent.pollCycle();
+        	        request.send();
+                	agent.getCollector().setRequest(null); //make sure we're not reusing the request
+        		}
+            } catch (Exception e) {
+                // log exception and continue polling -- could be a transient issue
+                System.err.println("SEVERE: An error has occurred");
+                e.printStackTrace();
+            }
         }
     }
 }
