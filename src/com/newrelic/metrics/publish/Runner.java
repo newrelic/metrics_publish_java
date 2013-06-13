@@ -58,7 +58,7 @@ public class Runner {
         pollInterval = config.getPollInterval();
 
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();  
-        executor.scheduleAtFixedRate(new PollAgentsRunnable(), 0, pollInterval, TimeUnit.SECONDS);  //schedule pollAgentsRunnable as the runnable command
+        executor.scheduleAtFixedRate(new PollAgentsRunnable(), 0, pollInterval, TimeUnit.HOURS);  //schedule pollAgentsRunnable as the runnable command
         
         System.out.println("INFO: New Relic monitor started");
         
