@@ -58,12 +58,12 @@ public class Runner {
         pollInterval = config.getPollInterval();
 
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();  
-        executor.scheduleAtFixedRate(new PollAgentsRunnable(), 0, pollInterval, TimeUnit.HOURS);  //schedule pollAgentsRunnable as the runnable command
+        executor.scheduleAtFixedRate(new PollAgentsRunnable(), 0, pollInterval, TimeUnit.SECONDS);  //schedule pollAgentsRunnable as the runnable command
         
         System.out.println("INFO: New Relic monitor started");
         
         try {
-           executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+           executor.awaitTermination(Long.MAX_VALUE, TimeUnit.HOURS);
         } catch (InterruptedException e) {
             System.err.println("SEVERE: An error has occurred");
             e.printStackTrace();
