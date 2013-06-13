@@ -49,13 +49,9 @@ public class DataCollector {
 		this.request = request;
 	}
 
-	public void addData(String metricName, String units, int data) {
+	public void addData(String metricName, String units, Number data) {
 		String metricFullName = METRIC_PREFIX + metricName + "[" + units + "]";
 		request.addMetric(componentData, metricFullName, data);
 	}
-	
-	public void addData(String metricName, String units, float data) {
-		String metricFullName = METRIC_PREFIX + metricName + "[" + units + "]";
-		request.addMetric(componentData, metricFullName, data);
-	}
+
 }
