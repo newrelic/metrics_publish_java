@@ -42,14 +42,11 @@ public abstract class Agent {
 		collector = new DataCollector(this);
 	}
 	
-	public void reportMetric(String metricName, String units, int value) {
-		Context.getLogger().fine("Reporting int metric: " + metricName);
-		collector.addData(metricName, units, value);
-	}
-
-	public void reportMetric(String metricName, String units, float value) {
-		Context.getLogger().fine("Reporting float metric: " + metricName);
-		collector.addData(metricName, units, value);
+	public void reportMetric(String metricName, String units, Number value) {
+	    if (value != null) {
+	        Context.getLogger().fine("Reporting metric: " + metricName);
+	        collector.addData(metricName, units, value);
+	    }
 	}
 
 	/* package */ DataCollector getCollector() {

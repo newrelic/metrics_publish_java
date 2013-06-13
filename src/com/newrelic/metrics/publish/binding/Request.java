@@ -36,12 +36,12 @@ public class Request {
 		return duration;
 	}	
 
-	public MetricData addMetric(ComponentData component, String name, int value) {
-		return addMetric(component, new MetricData(component, name, value));
-	}
-	
-	public MetricData addMetric(ComponentData component, String name, float value) {
-		return addMetric(component, new MetricData(component, name, value));
+	public MetricData addMetric(ComponentData component, String name, Number value) {
+	    MetricData metricData = null;
+	    if (value != null) {
+	       metricData = addMetric(component, new MetricData(component, name, value));
+	    }
+		return metricData;
 	}
 	
     public void send() {
