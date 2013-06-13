@@ -4,8 +4,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -56,17 +59,26 @@ public class Runner {
         pollInterval = config.getPollInterval();
 
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();  
-        executor.scheduleAtFixedRate(new PollAgentsRunnable(), 0, pollInterval, TimeUnit.SECONDS);  //schedule pollAgentsRunnable as the runnable command
+        ScheduledFuture<?> future = executor.scheduleAtFixedRate(new PollAgentsRunnable(), 0, pollInterval, TimeUnit.SECONDS);  //schedule pollAgentsRunnable as the runnable command
         
         System.out.println("INFO: New Relic monitor started");
         
         try {
-           executor.awaitTermination(Long.MAX_VALUE, TimeUnit.HOURS);
+            // getting the future's response will block forever unless an exception is thrown
+            future.get();
         } catch (InterruptedException e) {
+            System.err.println("SEVERE: An error has occurred");
+            e.printStackTrace();
+        } catch (CancellationException e) {
+            System.err.println("SEVERE: An error has occurred");
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            // ExecutionException will wrap any java.lang.Error from the polling thread that we should not catch there (e.g. OutOfMemoryError)
             System.err.println("SEVERE: An error has occurred");
             e.printStackTrace();
         } finally {
             // clean up and exit
+            future.cancel(true);
             executor.shutdown();
             System.exit(1);
         }
@@ -122,6 +134,7 @@ public class Runner {
         		}
             } catch (Exception e) {
                 // log exception and continue polling -- could be a transient issue
+                // java.lang.Error(s) are thrown and handled by the main thread
                 System.err.println("SEVERE: An error has occurred");
                 e.printStackTrace();
             }
