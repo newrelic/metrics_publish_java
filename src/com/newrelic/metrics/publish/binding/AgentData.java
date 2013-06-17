@@ -4,9 +4,6 @@ import java.util.HashMap;
 
 /**
  * Represents an agent for a given {@link Request}.
- * 
- * @author kevin-mcguire
- *
  */
 public class AgentData {
 	public String host;

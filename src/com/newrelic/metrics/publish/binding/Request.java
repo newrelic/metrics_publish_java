@@ -20,8 +20,6 @@ import org.json.simple.JSONValue;
  * 
  * <p> A {@code Request} has an associated {@link Context} and a list of metrics for a given component.
  * The {@code Request} is sent in the JSON format.
- * 
- * @author kevin-mcguire
  *
  */
 public class Request {

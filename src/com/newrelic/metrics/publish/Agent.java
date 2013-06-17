@@ -7,11 +7,9 @@ import com.newrelic.metrics.publish.internal.DataCollector;
  * An extensible class for gathering metrics from a system.
  * An {@code Agent} can be constructed directly with a GUID (Globally Unique Identifier)
  * and a version or configured with an {@link AgentFactory} through a JSON properties file.
+ * The GUID should be similar to the reverse of a DNS name; for example: {@code com.some_company.some_plugin_name}
  * <p> All subclasses must override {@link #pollCycle()} and {@link #getComponentHumanLabel()}. 
  * Additional hooks are provided for overriding: {@link #setupMetrics()} and {@link #prepareToRun()}. These hooks must call {@code super}.
- * 
- * @author kevin-mcguire
- * 
  */
 public abstract class Agent {
 
@@ -22,7 +20,9 @@ public abstract class Agent {
 	private DataCollector collector;
 
 	/**
-     * Constructs an {@code Agent} with provided GUID (Globally Unique Identifier) and version
+     * Constructs an {@code Agent} with provided GUID (Globally Unique Identifier) and version.
+     * The GUID should be similar to the reverse of a DNS name; for example: {@code com.some_company.some_plugin_name}
+     * The version should be incremented prior to publishing a modified agent.
      * @param GUID
      * @param version
      */
@@ -81,7 +81,8 @@ public abstract class Agent {
 	}
 	
 	/**
-	 * Report a metric with a name, unit(s) and value
+	 * Report a metric with a name, unit(s) and value. 
+	 * Value may be {@code null} in which case the reporting is skipped.
 	 * @param metricName the name of the metric
 	 * @param units the units to report
 	 * @param value the Number value to report

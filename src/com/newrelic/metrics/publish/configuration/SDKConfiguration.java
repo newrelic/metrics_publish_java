@@ -12,9 +12,6 @@ import com.newrelic.metrics.publish.binding.Context;
 
 /**
  * An object representation of the data read from the {@code newrelic.properties} configuration file.
- * 
- * @author kevin-mcguire
- * 
  */
 public class SDKConfiguration {
 

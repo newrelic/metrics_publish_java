@@ -22,9 +22,6 @@ import com.newrelic.metrics.publish.configuration.SDKConfiguration;
  * Add an {@link AgentFactory} to create an {@link Agent} 
  * or register an {@link Agent} directly. The {@code Runner} will poll {@link Agent}s 
  * in a loop that never returns.
- * 
- * @author kevin-mcguire
- * 
  */
 public class Runner {
 

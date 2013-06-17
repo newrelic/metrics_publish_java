@@ -15,9 +15,6 @@ import java.util.logging.Logger;
 
 /**
  * The context for a {@link Request} that manages {@link AgentData} and {@link ComponentData}.
- * 
- * @author kevin-mcguire
- *
  */
 public class Context {
 

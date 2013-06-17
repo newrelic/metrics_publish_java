@@ -4,9 +4,6 @@ import java.util.HashMap;
 
 /**
  * Represents a metric for reporting to the New Relic metrics API.
- * 
- * @author kevin-mcguire
- *
  */
 public class MetricData {
 	/* package */ String name;

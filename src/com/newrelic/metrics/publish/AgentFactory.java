@@ -20,9 +20,6 @@ import com.newrelic.metrics.publish.configuration.ConfigurationException;
  * <ol>
  * <li> Create new instances of an {@link Agent}
  * <li> Use {@code Map} of properties to configure state of new {@link Agent}s
- * 
- * @author kevin-mcguire
- * 
  */
 public abstract class AgentFactory {
 	private final String agentConfigurationFileName;

@@ -2,9 +2,6 @@ package com.newrelic.metrics.publish.configuration;
 
 /**
  * A general exception for SDK configuration issues
- * 
- * @author kevin-mcguire
- *
  */
 public class ConfigurationException extends Exception {
 

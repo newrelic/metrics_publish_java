@@ -2,9 +2,6 @@ package com.newrelic.metrics.publish.processors;
 
 /**
  * A general purpose interface for processing metric values in {@link Agent}.
- * 
- * @author kevin-mcguire
- *
  */
 public interface Processor {
     

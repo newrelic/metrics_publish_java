@@ -4,9 +4,6 @@ import java.util.Date;
 
 /**
  * A {@link Processor} for metric values over a time interval. 
- * 
- * @author kevin-mcguire
- *
  */
 public class EpochCounter implements Processor {
 	private Number lastValue;

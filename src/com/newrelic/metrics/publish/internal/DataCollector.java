@@ -8,9 +8,6 @@ import com.newrelic.metrics.publish.binding.Request;
 /**
  * An internal class that collects data for an {@link Agent}
  * and associates it with a new {@link Request}.
- * 
- * @author kevin-mcguire
- * 
  */
 public class DataCollector {
 	
