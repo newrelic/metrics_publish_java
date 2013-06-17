@@ -2,6 +2,12 @@ package com.newrelic.metrics.publish.binding;
 
 import java.util.HashMap;
 
+/**
+ * Represents a metric for reporting to the New Relic metrics API.
+ * 
+ * @author kevin-mcguire
+ *
+ */
 public class MetricData {
 	/* package */ String name;
 	/* package */ Number value;  //must be int or float

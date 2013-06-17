@@ -3,6 +3,16 @@ package com.newrelic.metrics.publish;
 import com.newrelic.metrics.publish.binding.Context;
 import com.newrelic.metrics.publish.internal.DataCollector;
 
+/**
+ * An extensible class for gathering metrics from a system.
+ * An {@code Agent} can be constructed directly with a GUID (Globally Unique Identifier)
+ * and a version or configured with an {@link AgentFactory} through a JSON properties file.
+ * <p> All subclasses must override {@link #pollCycle()} and {@link #getComponentHumanLabel()}. 
+ * Additional hooks are provided for overriding: {@link #setupMetrics()} and {@link #prepareToRun()}. These hooks must call {@code super}.
+ * 
+ * @author kevin-mcguire
+ * 
+ */
 public abstract class Agent {
 
 	private final String GUID;
@@ -11,37 +21,71 @@ public abstract class Agent {
 
 	private DataCollector collector;
 
+	/**
+     * Constructs an {@code Agent} with provided GUID (Globally Unique Identifier) and version
+     * @param GUID
+     * @param version
+     */
 	public Agent(String GUID, String version) {
 		super();
 		this.GUID = GUID;
 		this.version = version;
 	}
 	
-	//Must provide implementations
+	/**
+     * The {@code Agent} will gather and report metrics from this method during every poll cycle. 
+     * It is called by the {@link Runner} at a set interval and is run in a loop that never returns.
+     * <p> This method must be overridden by subclasses of {@code Agent}.
+     */
 	public abstract void pollCycle();	
+	
+	/**
+     * A human readable label for the component that this {@code Agent} is reporting metrics on. 
+     * <p> This method must be overridden by subclasses of {@code Agent}.
+     * @return String the component human label
+     */
 	public abstract String getComponentHumanLabel();
 	
-	//You can but don't need to override this
+	/**
+     * A hook called when the {@code Agent} is setup.
+     * Subclasses may override but must call {@code super}.
+     */
 	public void setupMetrics() {
 		Context.getLogger().fine("setupMetrics");
 	}
 	
+	/**
+     * Get the GUID (Globally Unique Identifier)
+     * @return String the GUID
+     */
 	public String getGUID() {
 		return GUID;
 	}
+	
+	/**
+     * Get the version
+     * @return String the version
+     */
 	public String getVersion() {
 		return version;
 	}
 	
 	/**
-	 * Subclasses may override but must call super.
-	 */
+     * A hook called when the {@code Agent} is setup.
+     * Subclasses may override but must call {@code super}.
+     */
 	public void prepareToRun() {
 		//This needs to be done after being configured to ensure the binding model created by the DataCollector
 		//has the most recent values from this
 		collector = new DataCollector(this);
 	}
 	
+	/**
+	 * Report a metric with a name, unit(s) and value
+	 * @param metricName the name of the metric
+	 * @param units the units to report
+	 * @param value the Number value to report
+	 */
 	public void reportMetric(String metricName, String units, Number value) {
 	    if (value != null) {
 	        Context.getLogger().fine("Reporting metric: " + metricName);

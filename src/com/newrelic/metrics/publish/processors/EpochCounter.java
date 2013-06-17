@@ -2,14 +2,26 @@ package com.newrelic.metrics.publish.processors;
 
 import java.util.Date;
 
+/**
+ * A {@link Processor} for metric values over a time interval. 
+ * 
+ * @author kevin-mcguire
+ *
+ */
 public class EpochCounter implements Processor {
 	private Number lastValue;
 	private Date lastTime;
 
+	/**
+     * Constructs an {@code EpochCounter}
+     */
 	public EpochCounter() {
 		super();
 	}
 
+	/**
+     * Process a metric value over a time interval
+     */
 	@Override
 	public Number process(Number val) {
 		Date currentTime = new Date();

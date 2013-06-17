@@ -11,7 +11,10 @@ import com.newrelic.metrics.publish.binding.Context;
 
 
 /**
- * An object representation of the data read from the newrelic.properties configuration file.
+ * An object representation of the data read from the {@code newrelic.properties} configuration file.
+ * 
+ * @author kevin-mcguire
+ * 
  */
 public class SDKConfiguration {
 
@@ -21,7 +24,11 @@ public class SDKConfiguration {
 	private final String propertyFileName = "newrelic.properties";
 	private final String configPath = "config";
 	
-	//TODO: consider moving Configuration classes to package level and making package-private
+	/**
+     * Constructs a {@code SDKConfiguration}
+     * @throws IOException if the {@code newrelic.properties} file does not exist
+     * @throws ConfigurationException if there is an error reading the {@code newrelic.properties} file
+     */
     public SDKConfiguration() throws IOException, ConfigurationException {        
         File file = getConfigurationFile();
         
@@ -55,21 +62,33 @@ public class SDKConfiguration {
         }
     }
 
+    /**
+     * Get the license key
+     * @return String
+     */
     public String getLicenseKey() {
         return licenseKey;
     }
 
+    /**
+     * Set the license key
+     * @param key
+     */
     public void setLicenseKey(String key) {
         licenseKey = key;
     }
 
+    /**
+     * Get the poll interval
+     * @return int the poll interval
+     */
     public int getPollInterval() {
         return 60;
     }
     
-	/*
-	 * For debug purposes only, not for general usage by clients of the SDK
-	 */
+    /**
+     * For debug purposes only, not for general usage by clients of the SDK
+     */
 	public String internalGetServiceURI() {
 		return serviceURI;
 	}

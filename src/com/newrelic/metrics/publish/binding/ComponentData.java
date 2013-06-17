@@ -2,6 +2,12 @@ package com.newrelic.metrics.publish.binding;
 
 import java.util.HashMap;
 
+/**
+ * Represents a component that reported metrics will be associated with for a {@link Request}.
+ * 
+ * @author kevin-mcguire
+ *
+ */
 public class ComponentData {
 	
 	public String name;
