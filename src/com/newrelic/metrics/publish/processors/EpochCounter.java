@@ -13,13 +13,13 @@ public class EpochCounter implements Processor {
 	@Override
 	public Number process(Number val) {
 		Date currentTime = new Date();
-		Number ret = 0;
+		Number ret = null;
 		
 		if(lastValue != null && lastTime != null && currentTime.after(lastTime)) {
 			long timeDiff = (currentTime.getTime() - lastTime.getTime()) / 1000;
 			ret = (val.floatValue()-lastValue.floatValue())/timeDiff;
 			if(ret.floatValue() < 0) {
-				ret = 0;
+				ret = null;
 			}
 		}
 		
