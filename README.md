@@ -14,7 +14,7 @@ getting started [documentation](http://newrelic.com/docs/platform/plugin-develop
 
 Add the New Relic Java SDK to your plugin's classpath to start developing.
 
-## Support EE
+## Support ##
 
 Reach out to us at
 [support.newrelic.com](http://support.newrelic.com/).
@@ -24,6 +24,6 @@ suggestions and discuss with staff and other users.
 Also available is community support on IRC: we generally use #newrelic
 on irc.freenode.net
 
-Find a bug?  E-mail support@newrelic.com, or post it to [support.newrelic.com](http://support.newrelic.com/).
+Find a bug?  E-mail support @  New Relic, or post it to [support.newrelic.com](http://support.newrelic.com/).
 
 Thank you!
