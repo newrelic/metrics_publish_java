@@ -15,9 +15,11 @@ import com.newrelic.metrics.publish.binding.Context;
 import com.newrelic.metrics.publish.configuration.ConfigurationException;
 
 /**
- * AgentFactory has two roles:
- * 1) Create new instances of an agent
- * 2) Map read in configuration tables to configured state of new agents
+ * A Factory for creating configured {@link Agent}s.
+ * <p> {@code AgentFactory} has two roles:
+ * <ol>
+ * <li> Create new instances of an {@link Agent}
+ * <li> Use {@code Map} of properties to configure state of new {@link Agent}s
  */
 public abstract class AgentFactory {
 	private final String agentConfigurationFileName;
@@ -26,12 +28,19 @@ public abstract class AgentFactory {
 //	TODO system property for config path
 	private static final String CONFIG_PATH = "config";
 	
+	/**
+     * Constructs an {@code AgentFactory} with an agent configuration file.
+     * @param agentConfigFileName the configuration file to be used for creating {@link Agent}s
+     */
 	public AgentFactory(String agentConfigFileName) {
 		super();
 		this.agentConfigurationFileName = agentConfigFileName;
 		this.configRequired = true;
 	}
 
+	/**
+     * Constructs an {@code AgentFactory} without an agent configuration file.
+     */
 	public AgentFactory() {
 		super();
 		this.agentConfigurationFileName = null;
@@ -39,22 +48,23 @@ public abstract class AgentFactory {
 	}
 	
 	/**
-	 * Return a new instance of the appropriate Agent subclass, configured with information
-	 * extracted from the @properties, a Map of configuration keys and values.
-	 * 
-	 * The keys and values are the result of processing the file referred to by
-	 * getAgentConfigurationFileName().
-	 * The specific keys and legal values are specific to the domain of the agent.
-	 * Since the values come in as Object, casting and conversion may be required.
-	*/
+     * Return a new instance of the appropriate {@link Agent} subclass, configured with information
+     * extracted from the {@code properties}, a {@code Map} of configuration keys and values.
+     * The keys and values are the result of processing the file referred to by
+     * {@link #getAgentConfigurationFileName()}.
+     * The specific keys and legal values are specific to the domain of the agent.
+     * Since the values come in as {@code Object}, casting and conversion may be required.
+     * @param properties the {@code Map} of properties for creating a configured {@link Agent}
+     * @throws ConfigurationException if an error occurs while creating a configured {@link Agent}
+    */
 	public abstract Agent createConfiguredAgent(Map<String, Object> properties) throws ConfigurationException;
 	
 	/**
-	 * Returns the name of the file which holds the agent configuration information,
-	 * in JSON format.
-	 * Subclasses can override
-	 * @return String file name
-	 */
+     * Returns the name of the file which holds the agent configuration information,
+     * in JSON format.
+     * Subclasses can override
+     * @return String file name
+     */
 	public String getAgentConfigurationFileName() {
 		return agentConfigurationFileName;
 	}
@@ -74,6 +84,12 @@ public abstract class AgentFactory {
         }
 	}
 
+	/**
+     * Read in JSON file from the provided filename.
+     * @param filename the filename to read in
+     * @return JSONArray the JSONArray that represents the JSON file
+     * @throws ConfigurationException if an error occurs reading in or parsing the JSON file
+     */
 	public JSONArray readJSONFile(String filename) throws ConfigurationException {
 		Object parseResult = null;
 		

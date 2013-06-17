@@ -19,9 +19,9 @@ import com.newrelic.metrics.publish.configuration.SDKConfiguration;
 
 /**
  * The main entry point for executing the SDK.
- * Register agent instances that get run in a loop that never returns.
- * @author kevin-mcguire
- *
+ * Add an {@link AgentFactory} to create an {@link Agent} 
+ * or register an {@link Agent} directly. The {@code Runner} will poll {@link Agent}s 
+ * in a loop that never returns.
  */
 public class Runner {
 
@@ -30,6 +30,9 @@ public class Runner {
 	private int pollInterval = 60;
 	private HashSet<AgentFactory> factories = new HashSet<AgentFactory>();
 	
+	/**
+     * Constructs a {@code Runner} 
+     */
 	public Runner() {
 		super();
 		agents = new LinkedList<Agent>();
@@ -42,18 +45,36 @@ public class Runner {
         }
 	}
 	
+	/**
+     * Add an {@link AgentFactory} that can create {@link Agent}s
+     * through a JSON configuration file
+     * @param factory the {@link AgentFactory} to be added
+     */
 	public void add(AgentFactory factory) {
 		factories.add(factory);
 	}
 
+	/**
+     * Register an {@link Agent}
+     * @param agent the {@link Agent} to be registered
+     */
 	public void register(Agent agent) {
 		agents.add(agent);
 	}
 
+	/**
+     * Get the {@link SDKConfiguration} for the {@code Runner}
+     * @return SDKConfiguration the current {@link SDKConfiguration}
+     */
 	public SDKConfiguration getConfiguration() {
 		return config;
 	}
 
+	/**
+     * Setup the {@code Runner} and run in a loop that will never return.
+     * Add an {@link AgentFactory} or register {@link Agent}s before calling.
+     * @throws ConfigurationException if the {@link Runner} was not configured correctly
+     */
     public void setupAndRun() throws ConfigurationException {        
     	setupAgents();
         pollInterval = config.getPollInterval();

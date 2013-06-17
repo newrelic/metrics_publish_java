@@ -13,6 +13,9 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+/**
+ * The context for a {@link Request} that manages {@link AgentData} and {@link ComponentData}.
+ */
 public class Context {
 
 	private static final String SERVICE_URI = "https://platform-api.newrelic.com/platform/v1/metrics";
@@ -44,6 +47,11 @@ public class Context {
 		return LOGGER;
 	}
 	
+	/**
+     * Set a {@link java.util.logging.Logger} object. 
+     * This method should only be called to override the default logger settings.
+     * @param logger the {@link java.util.logging.Logger} to set
+     */
 	public static void setLogger(Logger logger) {
 		LOGGER = logger;
 	}
@@ -77,32 +85,43 @@ public class Context {
 		setLogger(logger);
 	}
 	
+	/**
+     * Constructs a {@code Context}
+     */
 	public Context() {
 		super();
 		agentData = new AgentData();
 		components = new LinkedList<ComponentData>();
 	}
 	
+	/**
+     * Create a {@link ComponentData} that reported metrics will belong to.
+     * @return ComponentData
+     */
 	public ComponentData createComponent() {
 		ComponentData componentData = new ComponentData(this);
 		add(componentData);
 		return componentData;
 	}
 
+	/**
+     * Get an {@link Iterator} for the list of {@link ComponentData}
+     * @return Iterator
+     */
 	public Iterator<ComponentData> getComponents() {
 		return components.iterator();
 	}
 	
 	/**
-	 * Return the URI of the metric data service that metric data gets posted to.
-	 */
+     * Return the URI of the metric data service that metric data gets posted to.
+     */
 	public String getServiceURI() {
 		return serviceURI;
 	}
 	
-	/*
-	 * For debug purposes only, not for general usage by clients of the SDK
-	 */
+	/**
+     * An internal method for debug purposes only, not for general usage by clients of the SDK
+     */
 	public void internalSetServiceURI(String URI) {
 		serviceURI = URI;
 	}
@@ -111,10 +130,10 @@ public class Context {
 		components.add(componentData);
 	}
 	
-    /*
+    /**
      * Create an http url connection to post data to the New Relic service.
      *  
-     * @return
+     * @return HttpURLConnection
      * @throws IOException
      */
     /* package */ HttpURLConnection createUrlConnectionForOutput() throws IOException {

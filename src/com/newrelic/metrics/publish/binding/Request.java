@@ -15,6 +15,13 @@ import java.util.logging.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+/**
+ * Represents a request to the New Relic metrics API.
+ * 
+ * <p> A {@code Request} has an associated {@link Context} and a list of metrics for a given component.
+ * The {@code Request} is sent in the JSON format.
+ *
+ */
 public class Request {
 	
     private static final String EMPTY_STRING = "";
@@ -26,16 +33,32 @@ public class Request {
 	private final HashMap<ComponentData, LinkedList<MetricData>> metrics = new HashMap<ComponentData, LinkedList<MetricData>>(); 
 	private final int duration;
 	
+	/**
+     * Constructs a {@code Request} with a given {@link Context} and duration
+     * @param context the {@link Context} for the {@code Request}
+     * @param duration the duration for the {@code Request}
+     */
 	public Request(Context context, int duration) {
 		super();
 		this.context = context;
 		this.duration = duration;
 	}
 	
+	/**
+     * Get the duration
+     * @return int the duration
+     */
 	public int getDuration() {
 		return duration;
 	}	
 
+	/**
+	 * Add metric to the {@code Request} for a given component
+	 * @param component the {@code ComponentData} the metric should be added to
+	 * @param name the name of the metric
+	 * @param value the Number value for the metric
+	 * @return MetricData the newly added metric
+	 */
 	public MetricData addMetric(ComponentData component, String name, Number value) {
 	    MetricData metricData = null;
 	    if (value != null) {
@@ -44,6 +67,9 @@ public class Request {
 		return metricData;
 	}
 	
+	/**
+     * Send the {@code Request} to the New Relic metrics API.
+     */
     public void send() {
         // do not send an empty request
         if (metrics.isEmpty()) {
