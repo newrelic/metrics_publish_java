@@ -2,6 +2,9 @@ package com.newrelic.metrics.publish.binding;
 
 import java.util.HashMap;
 
+/**
+ * Represents an agent for a given {@link Request}.
+ */
 public class AgentData {
 	public String host;
 	public String version;

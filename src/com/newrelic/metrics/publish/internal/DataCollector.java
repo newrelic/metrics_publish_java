@@ -6,7 +6,8 @@ import com.newrelic.metrics.publish.binding.Context;
 import com.newrelic.metrics.publish.binding.Request;
 
 /**
- * Associates an Agent with a new Request for collecting data from the agent.
+ * An internal class that collects data for an {@link Agent}
+ * and associates it with a new {@link Request}.
  */
 public class DataCollector {
 	
@@ -22,6 +23,10 @@ public class DataCollector {
 	private Context context;
 	private final Agent agent;
 	
+	/**
+     * Constructs a {@code DataCollector} with the provided {@link Agent}.
+     * @param agent the {@link Agent} to construct with
+     */
 	public DataCollector(Agent agent) {
 		this.agent = agent;
 		
@@ -37,18 +42,36 @@ public class DataCollector {
 //		componentData.duration = pollInterval;
 	}
 	
+	/**
+     * Get the {@link Agent} 
+     * @return agent
+     */
 	public Agent getAgent() {
 		return agent;
 	}
 	
+	/**
+     * Get the {@link Context}
+     * @return context
+     */
 	public Context getContext() {
 		return context;
 	}
 
+	/**
+     * Set the {@link Request}
+     * @param request
+     */
 	public void setRequest(Request request) {
 		this.request = request;
 	}
 
+	/**
+	 * Add data to the {@code DataCollector}
+	 * @param metricName the name of the metric to add
+	 * @param units the units of the metric
+	 * @param data the Number data value of the metric
+	 */
 	public void addData(String metricName, String units, Number data) {
 		String metricFullName = METRIC_PREFIX + metricName + "[" + units + "]";
 		request.addMetric(componentData, metricFullName, data);
