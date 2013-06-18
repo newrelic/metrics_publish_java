@@ -18,6 +18,7 @@ public class SDKConfiguration {
 	private static final String DEFAULT_LICENSE_KEY = "YOUR_LICENSE_KEY_HERE";
     private String licenseKey;
     private String serviceURI;
+    private boolean sslHostVerification = true;
 	private final String propertyFileName = "newrelic.properties";
 	private final String configPath = "config";
 	
@@ -57,6 +58,11 @@ public class SDKConfiguration {
         	serviceURI = props.getProperty("host");
         	Context.getLogger().info("Metric service URI: " + serviceURI);
         }
+        
+        if (props.containsKey("sslHostVerification")) {
+            sslHostVerification = Boolean.parseBoolean(props.getProperty("sslHostVerification"));
+            Context.getLogger().fine("Using SSL host verification: " + sslHostVerification);
+        }
     }
 
     /**
@@ -88,6 +94,15 @@ public class SDKConfiguration {
      */
 	public String internalGetServiceURI() {
 		return serviceURI;
+	}
+	
+	/**
+	 * Returns if ssl host verification is enabled. 
+	 * Adding {@code sslHostVerification} to {@code newrelic.properties}. It is {@code true} by default.
+	 * @return boolean
+	 */
+	public boolean isSSLHostVerificationEnabled() {
+	    return sslHostVerification;
 	}
     
     private File getConfigurationFile() throws ConfigurationException {
