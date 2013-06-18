@@ -128,6 +128,7 @@ public class Runner {
 	        if(config.internalGetServiceURI() != null) {
 	        	agent.getCollector().getContext().internalSetServiceURI(config.internalGetServiceURI());
 	        }
+	        agent.getCollector().getContext().internalSetSSLHostVerification(config.isSSLHostVerificationEnabled());
 		}
     }
     
