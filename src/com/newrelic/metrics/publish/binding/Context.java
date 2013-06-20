@@ -13,6 +13,10 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
+
 /**
  * The context for a {@link Request} that manages {@link AgentData} and {@link ComponentData}.
  */
@@ -26,6 +30,7 @@ public class Context {
 	public AgentData agentData;
 	
 	private String serviceURI = SERVICE_URI;
+	private boolean sslHostVerification = true;
     private static Logger LOGGER;
 	private LinkedList<ComponentData> components;
 	
@@ -125,8 +130,16 @@ public class Context {
 	public void internalSetServiceURI(String URI) {
 		serviceURI = URI;
 	}
-	
-	/* package */ void add(ComponentData componentData) {
+
+	/**
+	 * Internal method for setting ssl host verification
+	 * @param sslHostVerification
+	 */
+    public void internalSetSSLHostVerification(boolean sslHostVerification) {
+        this.sslHostVerification = sslHostVerification;
+    }
+
+    /* package */ void add(ComponentData componentData) {
 		components.add(componentData);
 	}
 	
@@ -145,6 +158,18 @@ public class Context {
         connection.addRequestProperty("X-License-Key", licenseKey);
         connection.addRequestProperty("Content-Type", "application/json");
         connection.addRequestProperty("Accept", "application/json");
+        
+        // if not verifying ssl host and using https, add custom hostname verifier
+        // else use default hostname verifier
+        if (connection instanceof HttpsURLConnection && !sslHostVerification) {
+            // ssl hostname verifier verifies any host
+            ((HttpsURLConnection) connection).setHostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+        }
         
         connection.setDoOutput(true);
         return connection;
