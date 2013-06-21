@@ -3,14 +3,21 @@ package com.newrelic.metrics.publish.binding;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.MessageFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import javax.net.ssl.HostnameVerifier;
@@ -85,6 +92,10 @@ public class Context {
 			}
 		}
 		Logger logger = Logger.getLogger(LOGGER_NAME);
+		// setting handler's formatter to a custom formatter
+		for(Handler handler : logger.getHandlers()) {
+		    handler.setFormatter(new LogFormatter());
+		}
 		// setting the logger's level to ALL so that it can be overridden by the ConsoleHandler and FileHandler log levels.
 		logger.setLevel(Level.ALL);	
 		setLogger(logger);
@@ -188,4 +199,66 @@ public class Context {
 		
 		return output;
 	}	
+	
+	/**
+	 * Using the source of {@link java.util.logging.SimpleFormatter} as a starting point.
+	 * LogFormatter adjusts the line formatting for each log message. 
+	 * Better timestamp formatting and shrinking the log statement to one line.
+	 */
+	static private class LogFormatter extends Formatter {
+	    private static final String LEFT_BRACKET = "[";
+	    private static final String RIGHT_BRACKET = "]";
+	    private static final String SPACE = " ";
+	    private static final String PIPE = "|";
+	    
+	    Date date = new Date();
+	    private final static String format = "{0,date,yyyy-MM-dd} {0,time,HH:mm:ss Z}";
+	    private MessageFormat formatter;
+	    
+	    private Object args[] = new Object[1];
+	    
+	    private String lineSeparator = System.getProperty("line.separator");
+	    
+	    /**
+	     * Format the given LogRecord.
+	     * @param record the log record to be formatted.
+	     * @return a formatted log record
+	     */
+        @Override
+        public synchronized String format(LogRecord record) {
+            StringBuilder builder = new StringBuilder();
+            builder.append(LEFT_BRACKET);
+            // Minimize memory allocations here.
+            date.setTime(record.getMillis());
+            args[0] = date;
+            StringBuffer text = new StringBuffer();
+            if (formatter == null) {
+                formatter = new MessageFormat(format);
+            }
+            formatter.format(args, text, null);
+            builder.append(text);
+            builder.append(RIGHT_BRACKET).append(SPACE);
+            if (record.getSourceClassName() != null) {  
+                builder.append(record.getSourceClassName());
+            } else {
+                builder.append(record.getLoggerName());
+            }
+            builder.append(SPACE).append(PIPE).append(SPACE);
+            builder.append(record.getLevel().getLocalizedName());
+            builder.append(SPACE).append(PIPE).append(SPACE);
+            String message = formatMessage(record);
+            builder.append(message);
+            builder.append(lineSeparator);
+            if (record.getThrown() != null) {
+                try {
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    record.getThrown().printStackTrace(pw);
+                    pw.close();
+                    builder.append(sw.toString());
+                } catch (Exception ex) {}
+            }
+            return builder.toString();
+        }
+	}
 }
