@@ -1,6 +1,5 @@
 package com.newrelic.metrics.publish.binding;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
@@ -20,13 +19,12 @@ public class ComponentDataTest {
         component.guid = "com.test.guid";
         component.name = "test component";
         
-        // test metric
+        // test metrics
         request.addMetric(component, "test metric", 7);
+        request.addMetric(component, "second test metric", 33.3);
         
         // serialize test
         HashMap<String, Object> data = component.serialize(request);
-        
-        assertFalse(data.isEmpty());
         
         // expected outcome
         HashMap<String, Object> expected = new HashMap<String, Object>();
@@ -36,6 +34,7 @@ public class ComponentDataTest {
 
         HashMap<String, Object> expectedMetrics = new HashMap<String, Object>();
         expectedMetrics.put("test metric", 7);
+        expectedMetrics.put("second test metric", 33.3);
         expected.put("metrics", expectedMetrics);
         
         assertTrue(expected.equals(data));

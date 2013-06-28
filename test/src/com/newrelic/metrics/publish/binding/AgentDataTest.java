@@ -26,7 +26,6 @@ public class AgentDataTest {
         expected.put("version", "1.0.0");
         expected.put("pid", 10);
         
-        assertTrue(data.size() == 3);
         assertTrue(expected.equals(data));
     }
 }

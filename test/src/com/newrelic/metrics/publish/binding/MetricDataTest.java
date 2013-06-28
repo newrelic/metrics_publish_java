@@ -18,7 +18,6 @@ public class MetricDataTest {
         HashMap<String, Object> expected = new HashMap<String, Object>();
         expected.put("test metric", 10);
         
-        assertTrue(data.size() == 1);
         assertTrue(expected.equals(data));
     }
 }

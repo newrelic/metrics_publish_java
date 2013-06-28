@@ -1,6 +1,5 @@
 package com.newrelic.metrics.publish.binding;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
@@ -30,7 +29,6 @@ public class RequestTest {
         request.addMetric(component, "test metric", 17.0f);
         
         Map<String, Object> data = request.serialize();
-        assertFalse(data.isEmpty());
         
         // expected outcome
         HashMap<String, Object> expected = new HashMap<String, Object>();

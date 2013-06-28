@@ -14,9 +14,13 @@ public class ContextTest {
         
         // test component
         Context context = new Context();
-        ComponentData component = context.createComponent();
-        component.guid = "com.test.guid";
-        component.name = "test component name";
+        ComponentData firstComponent = context.createComponent();
+        firstComponent.guid = "com.test.guid.first";
+        firstComponent.name = "test component name";
+        
+        ComponentData secondComponent = context.createComponent();
+        secondComponent.guid = "com.test.guid";
+        secondComponent.name = "test component name";
         
         // test that size is 1 and only one component was added
         int size = 0;
@@ -27,7 +31,7 @@ public class ContextTest {
             itrComponent = itr.next();
         }
         
-        assertTrue(size == 1);
+        assertTrue(size == 2);
         assertTrue(itrComponent != null);
         assertEquals("com.test.guid", itrComponent.guid);
         assertEquals("test component name", itrComponent.name);
