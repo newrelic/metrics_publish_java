@@ -16,13 +16,13 @@ public class ContextTest {
         Context context = new Context();
         ComponentData firstComponent = context.createComponent();
         firstComponent.guid = "com.test.guid.first";
-        firstComponent.name = "test component name";
+        firstComponent.name = "first test component name";
         
         ComponentData secondComponent = context.createComponent();
         secondComponent.guid = "com.test.guid";
         secondComponent.name = "test component name";
         
-        // test that size is 1 and only one component was added
+        // test that only 2 components are added in the correct order
         int size = 0;
         ComponentData itrComponent = null; 
         Iterator<ComponentData> itr = context.getComponents();
