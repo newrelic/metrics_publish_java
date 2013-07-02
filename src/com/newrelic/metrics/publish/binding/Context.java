@@ -115,7 +115,7 @@ public class Context {
      * @return ComponentData
      */
 	public ComponentData createComponent() {
-		ComponentData componentData = new ComponentData(this);
+		ComponentData componentData = new ComponentData();
 		add(componentData);
 		return componentData;
 	}

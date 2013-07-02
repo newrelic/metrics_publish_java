@@ -9,12 +9,9 @@ public class ComponentData {
 	
 	public String name;
 	public String guid;
-	/* package */ Context context;
 	
-	/* package */ ComponentData(Context context) {
+	/* package */ ComponentData() {
 		super();
-		this.context = context;
-		context.add(this);
 	}
 
 	/* package */ HashMap<String,Object> serialize(Request request) {
