@@ -10,7 +10,7 @@ public class MetricDataTest {
     
     @Test
     public void testSerialize() {       
-        MetricData metric = new MetricData(new ComponentData(), "test metric", 10);
+        MetricData metric = new MetricData("test metric", 10);
         
         HashMap<String, Object> data = new HashMap<String, Object>();
         metric.serialize(data);
