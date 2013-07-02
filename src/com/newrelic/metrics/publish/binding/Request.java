@@ -62,7 +62,7 @@ public class Request {
 	public MetricData addMetric(ComponentData component, String name, Number value) {
 	    MetricData metricData = null;
 	    if (value != null) {
-	       metricData = addMetric(component, new MetricData(component, name, value));
+	       metricData = addMetric(component, new MetricData(name, value));
 	    }
 		return metricData;
 	}
