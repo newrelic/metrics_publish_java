@@ -1,6 +1,12 @@
 ## New Relic Java SDK Change Log ##
 
-### v1.0.2 - Unreleased ###
+### v1.0.3 - July 18th, 2013 ###
+
+**Bug Fixes**
+
+* Fixed `EpochCounter#process` issue where sub-second intervals (e.g. 400 ms) would return non-null values.
+
+### v1.0.2 - July 7th, 2013 ###
 
 **Bug Fixes**
 
