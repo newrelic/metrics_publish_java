@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -31,14 +32,25 @@ public class Request {
 	
 	private final Context context;
 	private final HashMap<ComponentData, LinkedList<MetricData>> metrics = new HashMap<ComponentData, LinkedList<MetricData>>(); 
-	private final int duration;
+	private final Integer duration;
 	
 	/**
-     * Constructs a {@code Request} with a given {@link Context} and duration
-     * @param context the {@link Context} for the {@code Request}
-     * @param duration the duration for the {@code Request}
-     */
-	public Request(Context context, int duration) {
+	 * Constructs a {@code Request} with a given {@link Context}.
+	 * @param context the {@link Context} for the {@code Request}
+	 */
+	public Request(Context context) {
+	   this(context, null);
+	}
+
+	/**
+	 * Constructs a {@code Request} with a given {@link Context} and duration.
+	 * The duration is an override for each {@link ComponentData} within this {@code Request}.
+	 * Providing a duration will set the duration value for each {@link ComponentData}.
+	 * If no duration is provided, each {@link ComponentData} will calculate its own duration from the last successful reported timestamp.
+	 * @param context the {@link Context} for the {@code Request}
+	 * @param duration the duration for each {@link ComponentData}
+	 */
+	public Request(Context context, Integer duration) {
 		super();
 		this.context = context;
 		this.duration = duration;
@@ -46,9 +58,9 @@ public class Request {
 	
 	/**
      * Get the duration
-     * @return int the duration
+     * @return Integer the duration
      */
-	public int getDuration() {
+	public Integer getDuration() {
 		return duration;
 	}	
 
@@ -109,13 +121,15 @@ public class Request {
                     }
                 }
             } finally {
-                connection.disconnect();
+                if (connection != null) {
+                    connection.disconnect();
+                }
             }
         }
     }
     
     /**
-     * Process response and log response as appropriate
+     * Process response and log response as appropriate.
      * @param connection
      * @throws IOException
      */
@@ -138,6 +152,8 @@ public class Request {
         		System.exit(1);
             } else if (isResponseOk(responseCode, responseBody)) {
         		Context.getLogger().fine("Server response: " + responseCode + ", " + responseBody);
+        		// update last successful timestamps
+        		updateComponentTimestamps();
             } else {
         		// all other response codes will fail
         		Context.getLogger().info("Failed server response: " + responseCode + ", " + responseBody);
@@ -241,6 +257,16 @@ public class Request {
     	} else {
     		return null;
     	}
+    }
+    
+    /**
+     * Update component timestamps for last successful reported
+     */
+    private void updateComponentTimestamps() {
+        Date now = new Date();
+        for (ComponentData component : metrics.keySet()) {
+            component.setLastSuccessfulReportedAt(now);
+        }
     }
     
 	/* package */ Map<String, Object> serialize() {		
