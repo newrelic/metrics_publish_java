@@ -34,6 +34,8 @@ public class Request {
 	private final HashMap<ComponentData, LinkedList<MetricData>> metrics = new HashMap<ComponentData, LinkedList<MetricData>>(); 
 	private final Integer duration;
 	
+	private Date sentAt;
+	
 	/**
 	 * Constructs a {@code Request} with a given {@link Context}.
 	 * @param context the {@link Context} for the {@code Request}
@@ -89,6 +91,9 @@ public class Request {
         } else {
             HttpURLConnection connection = null;
             Logger logger = Context.getLogger();
+            
+            // timestamp for sent request
+            sentAt = new Date();
             
             try {
                 connection = context.createUrlConnectionForOutput();
@@ -260,12 +265,14 @@ public class Request {
     }
     
     /**
-     * Update component timestamps for last successful reported
+     * Update component timestamps for last successful reported.
      */
     private void updateComponentTimestamps() {
-        Date now = new Date();
+        if (sentAt == null) {
+            throw new IllegalStateException("sentAt timestamp should be set");
+        }
         for (ComponentData component : metrics.keySet()) {
-            component.setLastSuccessfulReportedAt(now);
+            component.setLastSuccessfulReportedAt(sentAt);
         }
     }
     
