@@ -1,6 +1,6 @@
 ## New Relic Platform Java SDK Change Log ##
 
-### v1.0.4 - UNRELEASED ###
+### v1.0.4 - July 24th, 2013 ###
 
 **Features**
 
