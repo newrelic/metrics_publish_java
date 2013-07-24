@@ -148,7 +148,6 @@ public class Runner {
                 for (Iterator<Agent> iterator = agents.iterator(); iterator.hasNext();) {
         			Agent agent = iterator.next();
                 	Request request = new Request(agent.getCollector().getContext());
-                	//todo set poll interval
                 	agent.getCollector().setRequest(request);
         	        agent.pollCycle();
         	        request.send();
