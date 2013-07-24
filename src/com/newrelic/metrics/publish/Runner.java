@@ -147,8 +147,7 @@ public class Runner {
             	Context.getLogger().fine("Harvest and report data");
                 for (Iterator<Agent> iterator = agents.iterator(); iterator.hasNext();) {
         			Agent agent = iterator.next();
-                	Request request = new Request(agent.getCollector().getContext(), pollInterval);
-                	//todo set poll interval
+                	Request request = new Request(agent.getCollector().getContext());
                 	agent.getCollector().setRequest(request);
         	        agent.pollCycle();
         	        request.send();

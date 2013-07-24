@@ -1,4 +1,10 @@
-## New Relic Java SDK Change Log ##
+## New Relic Platform Java SDK Change Log ##
+
+### v1.0.4 - July 24th, 2013 ###
+
+**Features**
+
+* Added support for automatic handling of component durations between successful metric publishes.
 
 ### v1.0.3 - July 18th, 2013 ###
 
