@@ -4,7 +4,6 @@ import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -19,9 +18,6 @@ public class SendRequestTest {
 
     @Test
     public void testSendWithComponentDataTimestamps() throws Exception {
-
-        Date start = new Date();
-        
         Context context = new OkStatusResponseContext();
         context.agentData.host = "test host";
         context.agentData.pid = 5;
@@ -36,12 +32,8 @@ public class SendRequestTest {
         
         request.send();
         
-        Date end = new Date();
-        
         Date lastSuccessfulReportedAt = getLastSuccessfulReportedAt(component);
         assertNotNull(lastSuccessfulReportedAt);
-        assertTrue(lastSuccessfulReportedAt.getTime() >= start.getTime());
-        assertTrue(lastSuccessfulReportedAt.getTime() <= end.getTime());
     }
     
     private Date getLastSuccessfulReportedAt(ComponentData component) throws Exception {
