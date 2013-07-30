@@ -3,6 +3,7 @@ package com.newrelic.metrics.publish.binding;
 import java.util.HashMap;
 
 /**
+ * Provisional API which is subject to change.
  * Represents a metric for reporting to the New Relic metrics API.
  */
 public class MetricData {

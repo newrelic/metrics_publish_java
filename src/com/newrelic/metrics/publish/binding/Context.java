@@ -25,6 +25,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 
 /**
+ * Provisional API which is subject to change.
  * The context for a {@link Request} that manages {@link AgentData} and {@link ComponentData}.
  */
 public class Context {
