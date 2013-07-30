@@ -17,6 +17,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 /**
+ * Provisional API which is subject to change.
  * Represents a request to the New Relic metrics API.
  * 
  * <p> A {@code Request} has an associated {@link Context} and a list of metrics for a given component.

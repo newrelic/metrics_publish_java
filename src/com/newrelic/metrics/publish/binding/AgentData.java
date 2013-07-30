@@ -3,6 +3,7 @@ package com.newrelic.metrics.publish.binding;
 import java.util.HashMap;
 
 /**
+ * Provisional API which is subject to change.
  * Represents an agent for a given {@link Request}.
  */
 public class AgentData {

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 /**
+ * Provisional API which is subject to change.
  * Represents a component that reported metrics will be associated with for a {@link Request}.
  */
 public class ComponentData {
