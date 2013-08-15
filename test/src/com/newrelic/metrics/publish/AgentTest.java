@@ -1,9 +1,10 @@
 package com.newrelic.metrics.publish;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -51,13 +52,13 @@ public class AgentTest {
         
         // expected metrics
         HashMap<String, Object> expectedMetrics = new HashMap<String, Object>();
-        expectedMetrics.put("Component/Cycles/Count[cycles]", 1);
+        expectedMetrics.put("Component/Cycles/Count[cycles]", Arrays.<Number>asList(5.0f, 2, 2.0f, 3.0f, 25.0f));
         expectedComponent.put("metrics", expectedMetrics);
         
         expectedComponents.add(expectedComponent);
         expected.put("components", expectedComponents);
         
-        assertTrue(expected.equals(serializedRequest));
+        assertEquals(expected, serializedRequest);
     }
     
     private static class OneCycleAgent extends Agent {
@@ -68,7 +69,7 @@ public class AgentTest {
 
         @Override
         public void pollCycle() {
-            reportMetric("Cycles/Count", "cycles", 1);
+            reportMetric("Cycles/Count", "cycles", 2, 5, 2, 3, 25);
         }
 
         @Override

@@ -81,16 +81,38 @@ public abstract class Agent {
 	}
 	
 	/**
-	 * Report a metric with a name, unit(s) and value. 
-	 * Value may be {@code null} in which case the reporting is skipped.
-	 * @param metricName the name of the metric
-	 * @param units the units to report
-	 * @param value the Number value to report
-	 */
+	 * Report a metric with a name, unit(s) and value.
+	 * The {@link Number} value is converted to a {@code float}.
+	 * The count is assumed to be 1, while minValue and maxValue are set to value.
+     * Sum of squares is calculated as the value squared.
+     * If the value is {@code null}, the reporting is skipped.
+     * @param metricName the name of the metric
+     * @param units the units to report
+     * @param value the Number value to report
+     */
 	public void reportMetric(String metricName, String units, Number value) {
 	    if (value != null) {
 	        Context.getLogger().fine("Reporting metric: " + metricName);
 	        collector.addData(metricName, units, value);
+	    }
+	}
+	
+	/**
+	 * Report a metric with a name, unit(s), count, value, minValue, maxValue and sumOfSquares.
+	 * All {@link Number} values are converted to {@code floats}.
+	 * If any of the values are {@code null}, the reporting is skipped.
+	 * @param metricName the name of the metric
+	 * @param units the units to report
+	 * @param count the number of things being measured
+	 * @param value the Number value to report
+	 * @param minValue the minimum Number value to report
+	 * @param maxValue the maximum Number value to report
+	 * @param sumOfSquares the sum of squared values to report
+	 */
+	public void reportMetric(String metricName, String units, int count, Number value, Number minValue, Number maxValue, Number sumOfSquares) {
+	    if (value != null && minValue != null && maxValue != null && sumOfSquares != null) {
+	        Context.getLogger().fine("Reporting metric: " + metricName);
+            collector.addData(metricName, units, count, value, minValue, maxValue, sumOfSquares);
 	    }
 	}
 

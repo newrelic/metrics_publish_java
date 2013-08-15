@@ -1,5 +1,11 @@
 ## New Relic Platform Java SDK Change Log ##
 
+### v1.1.0 - Unreleased ###
+
+**Features**
+
+* Added support for metric aggregation when the agent cannot connect to New Relic's Metric API.
+
 ### v1.0.4 - July 24th, 2013 ###
 
 **Features**
