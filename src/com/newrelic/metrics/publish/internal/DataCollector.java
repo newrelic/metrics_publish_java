@@ -66,36 +66,36 @@ public class DataCollector {
 		this.request = request;
 	}
 
-	/**
-	 * Add metric data to the {@code DataCollector}.
-	 * The {@link Number} value is converted to a {@code float}.
-	 * The count is assumed to be 1, while minValue and maxValue are set to value.
+    /**
+     * Add metric data to the {@code DataCollector}.
+     * The {@link Number} value is converted to a {@code float}.
+     * The count is assumed to be 1, while minValue and maxValue are set to value.
      * Sum of squares is calculated as the value squared.
-	 * @param metricName the name of the metric to add
-	 * @param units the units of the metric
-	 * @param data the Number data value of the metric
-	 */
-	public void addData(String metricName, String units, Number value) {
-		request.addMetric(componentData, getMetricFullName(metricName, units), value);
-	}
-	
-	/**
-	 * Add metric data to the {@code DataCollector}.
-	 * All {@link Number} data values are converted to {@code floats}.
-	 * @param metricName the name of the metric to add
-	 * @param units the units of the metric
-	 * @param count the number of things being measured
-	 * @param value the Number value of the metric
-	 * @param minValue the minimum Number value of the metric
-	 * @param maxValue the maximum Number value of the metric
-	 * @param sumOfSquares the sum of squared values of the metric
-	 */
+     * @param metricName the name of the metric to add
+     * @param units the units of the metric
+     * @param data the Number data value of the metric
+     */
+    public void addData(String metricName, String units, Number value) {
+        request.addMetric(componentData, getMetricFullName(metricName, units), value);
+    }
+
+    /**
+     * Add metric data to the {@code DataCollector}.
+     * All {@link Number} data values are converted to {@code floats}.
+     * @param metricName the name of the metric to add
+     * @param units the units of the metric
+     * @param count the number of things being measured
+     * @param value the Number value of the metric
+     * @param minValue the minimum Number value of the metric
+     * @param maxValue the maximum Number value of the metric
+     * @param sumOfSquares the sum of squared values of the metric
+     */
 	public void addData(String metricName, String units, int count, Number value, Number minValue, Number maxValue, Number sumOfSquares) {
         request.addMetric(componentData, getMetricFullName(metricName, units), count, value, minValue, maxValue, sumOfSquares);
-	}
-	
-	private String getMetricFullName(String metricName, String units) {
-	    return METRIC_PREFIX + metricName + "[" + units + "]";
-	}
+    }
+
+    private String getMetricFullName(String metricName, String units) {
+        return METRIC_PREFIX + metricName + "[" + units + "]";
+    }
 
 }

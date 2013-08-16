@@ -112,8 +112,8 @@ public class Request {
 	/**
      * Deliver the {@code Request} to the New Relic metrics API.
      */
-	public void deliver() {
-	    // do not send an empty request
+    public void deliver() {
+        // do not send an empty request
         if (metrics.isEmpty()) {
             Context.getLogger().fine("No metrics were reported for this poll cycle");
         } else {
@@ -158,15 +158,15 @@ public class Request {
                 }
             }
         }
-	}
-	
-	/**
-	 * Is the request delivered
-	 * @return boolean
-	 */
-	/* package */ boolean isDelivered() {
-	    return delivered;
-	}
+    }
+
+    /**
+     * Is the request delivered
+     * @return boolean
+     */
+    /* package */ boolean isDelivered() {
+        return delivered;
+    }
     
     /**
      * Process response and log response as appropriate.
@@ -316,30 +316,30 @@ public class Request {
 		return context.serialize(this);
 	}	
 
-	/* package */ List<MetricData> getMetrics(ComponentData component) {
-		if( ! metrics.containsKey(component)) {
-			metrics.put(component, new LinkedList<MetricData>());
-		}
-		return metrics.get(component);
-	}
-	
-	private MetricData addMetric(ComponentData component, MetricData metric) {
-		Context.getLogger().fine(component + " : " + metric);
-		List<MetricData> metrics = getMetrics(component);
-		if (metrics.contains(metric)) {
-		    aggregate(metric, metrics);
-		} else {
-		    metrics.add(metric);
-		}
-		return metric;
-	}
-	
-	private void aggregate(MetricData metric, List<MetricData> metrics) {
-	    for (MetricData existingMetric : metrics) {
-	        if (existingMetric.name.equals(metric.name)) {
-	            existingMetric.aggregrateWith(metric);
-	            break;
-	        }
-	    }
-	}
+    /* package */ List<MetricData> getMetrics(ComponentData component) {
+        if( ! metrics.containsKey(component)) {
+            metrics.put(component, new LinkedList<MetricData>());
+        }
+        return metrics.get(component);
+    }
+
+    private MetricData addMetric(ComponentData component, MetricData metric) {
+        Context.getLogger().fine(component + " : " + metric);
+        List<MetricData> metrics = getMetrics(component);
+        if (metrics.contains(metric)) {
+            aggregate(metric, metrics);
+        } else {
+            metrics.add(metric);
+        }
+        return metric;
+    }
+
+    private void aggregate(MetricData metric, List<MetricData> metrics) {
+        for (MetricData existingMetric : metrics) {
+            if (existingMetric.name.equals(metric.name)) {
+                existingMetric.aggregrateWith(metric);
+                break;
+            }
+        }
+    }
 }
