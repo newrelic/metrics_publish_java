@@ -103,7 +103,7 @@ public class Request {
 	 */
 	public MetricData addMetric(ComponentData component, String name, int count, Number value, Number minValue, Number maxValue, Number sumOfSquares) {
 	    MetricData metricData = null;
-	    if (value != null) {
+	    if (value != null && minValue != null && maxValue != null && sumOfSquares != null) {
 	        metricData = addMetric(component, new MetricData(name, count, value, minValue, maxValue, sumOfSquares));
 	    }
 	    return metricData;
