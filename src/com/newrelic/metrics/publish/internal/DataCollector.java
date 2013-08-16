@@ -90,7 +90,7 @@ public class DataCollector {
      * @param maxValue the maximum Number value of the metric
      * @param sumOfSquares the sum of squared values of the metric
      */
-	public void addData(String metricName, String units, int count, Number value, Number minValue, Number maxValue, Number sumOfSquares) {
+    public void addData(String metricName, String units, int count, Number value, Number minValue, Number maxValue, Number sumOfSquares) {
         request.addMetric(componentData, getMetricFullName(metricName, units), count, value, minValue, maxValue, sumOfSquares);
     }
 
