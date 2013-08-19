@@ -1,7 +1,8 @@
 package com.newrelic.metrics.publish.binding;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -12,8 +13,8 @@ public class ComponentDataTest {
     @Test
     public void testSerialize() {
         
-        Context context = new Context();
-        Request request = new Request(context, 60);
+        Context context = BindingFactory.createContext();
+        Request request = context.createRequest();
         
         // component to test
         ComponentData component = new ComponentData();
@@ -21,8 +22,8 @@ public class ComponentDataTest {
         component.name = "test component";
         
         // test metrics
-        request.addMetric(component, "test metric", 7);
-        request.addMetric(component, "second test metric", 33.3);
+        request.addMetric(component, "test metric", 7.0f);
+        request.addMetric(component, "second test metric", 33.2f);
         
         // serialize test
         HashMap<String, Object> data = component.serialize(request);
@@ -34,18 +35,18 @@ public class ComponentDataTest {
         expected.put("duration", 60);
 
         HashMap<String, Object> expectedMetrics = new HashMap<String, Object>();
-        expectedMetrics.put("test metric", 7);
-        expectedMetrics.put("second test metric", 33.3);
+        expectedMetrics.put("test metric", Arrays.<Number>asList(7.0f, 1, 7.0f, 7.0f, 49.0f));
+        expectedMetrics.put("second test metric", Arrays.<Number>asList(33.2f, 1, 33.2f, 33.2f, 1102.24f));
         expected.put("metrics", expectedMetrics);
         
-        assertTrue(expected.equals(data));
+        assertEquals(expected, data);
     }
     
     @Test
     public void testDefaultDuration() {
         
-        Context context = new Context();
-        Request request = new Request(context);
+        Context context = BindingFactory.createContext();
+        Request request = context.createRequest();
         
         // component to test
         ComponentData component = new ComponentData();
@@ -65,16 +66,16 @@ public class ComponentDataTest {
         expected.put("duration", 60);
 
         HashMap<String, Object> expectedMetrics = new HashMap<String, Object>();
-        expectedMetrics.put("test metric", 10);
+        expectedMetrics.put("test metric", Arrays.<Number>asList(10.0f, 1, 10.0f, 10.0f, 100.0f));
         expected.put("metrics", expectedMetrics);
         
-        assertTrue(expected.equals(data));
+        assertEquals(expected, data);
     }
     
     @Test
     public void testCalculatedDuration() {
-        Context context = new Context();
-        Request request = new Request(context);
+        Context context = BindingFactory.createContext();
+        Request request = BindingFactory.createRequest(context);
         
         // component to test
         ComponentData component = new ComponentData();
@@ -98,16 +99,16 @@ public class ComponentDataTest {
         expected.put("duration", 30);
 
         HashMap<String, Object> expectedMetrics = new HashMap<String, Object>();
-        expectedMetrics.put("test metric", 10);
+        expectedMetrics.put("test metric", Arrays.<Number>asList(10.0f, 1, 10.0f, 10.0f, 100.0f));
         expected.put("metrics", expectedMetrics);
         
-        assertTrue(expected.equals(data));
+        assertEquals(expected, data);
     }
     
     @Test
     public void testRoundedCalculatedDuration() {
-        Context context = new Context();
-        Request request = new Request(context);
+        Context context = BindingFactory.createContext();
+        Request request = BindingFactory.createRequest(context);
         
         // component to test
         ComponentData component = new ComponentData();
@@ -131,9 +132,9 @@ public class ComponentDataTest {
         expected.put("duration", 31);
 
         HashMap<String, Object> expectedMetrics = new HashMap<String, Object>();
-        expectedMetrics.put("test metric", 10);
+        expectedMetrics.put("test metric", Arrays.<Number>asList(10.0f, 1, 10.0f, 10.0f, 100.0f));
         expected.put("metrics", expectedMetrics);
         
-        assertTrue(expected.equals(data));
+        assertEquals(expected, data);
     }
 }

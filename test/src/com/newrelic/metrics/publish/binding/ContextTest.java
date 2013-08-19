@@ -1,6 +1,8 @@
 package com.newrelic.metrics.publish.binding;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
@@ -12,7 +14,6 @@ public class ContextTest {
     @Test
     public void testCreateComponent() {
         
-        // test component
         Context context = new Context();
         ComponentData firstComponent = context.createComponent();
         firstComponent.guid = "com.test.guid.first";
@@ -35,5 +36,28 @@ public class ContextTest {
         assertTrue(itrComponent != null);
         assertEquals("com.test.guid", itrComponent.guid);
         assertEquals("test component name", itrComponent.name);
+    }
+    
+    @Test
+    public void testCreateRequest() {
+        
+        Context context = BindingFactory.createContext();
+        Request request = context.createRequest();
+        
+        assertNotNull(request);
+    }
+    
+    @Test
+    public void testFailedRequestIsReused() {
+        
+        Context context = BindingFactory.createContextWithUnavailableResponse();
+        Request request = context.createRequest();
+        request.addMetric(BindingFactory.createComponent(context), "test metric", 1.0f);
+        
+        request.deliver();
+        
+        Request duplicate = context.createRequest();
+        
+        assertSame(request, duplicate);
     }
 }

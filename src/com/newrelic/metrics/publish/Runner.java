@@ -147,10 +147,10 @@ public class Runner {
             	Context.getLogger().fine("Harvest and report data");
                 for (Iterator<Agent> iterator = agents.iterator(); iterator.hasNext();) {
         			Agent agent = iterator.next();
-                	Request request = new Request(agent.getCollector().getContext());
+                	Request request = agent.getCollector().getContext().createRequest();
                 	agent.getCollector().setRequest(request);
-        	        agent.pollCycle();
-        	        request.send();
+                	agent.pollCycle();
+                	request.deliver();
                 	agent.getCollector().setRequest(null); //make sure we're not reusing the request
         		}
             } catch (Exception e) {
