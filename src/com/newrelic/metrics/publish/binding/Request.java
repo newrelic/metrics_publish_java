@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,42 +34,24 @@ public class Request {
 	
 	private final Context context;
 	private final HashMap<ComponentData, LinkedList<MetricData>> metrics = new HashMap<ComponentData, LinkedList<MetricData>>(); 
-	private final Integer duration;
 	
 	private Date sentAt;
+	private boolean delivered = false;
 	
 	/**
 	 * Constructs a {@code Request} with a given {@link Context}.
+	 * <p> See also {@link Context#createRequest()}
 	 * @param context the {@link Context} for the {@code Request}
 	 */
 	public Request(Context context) {
-	   this(context, null);
+	    this.context = context;
 	}
 
 	/**
-	 * Constructs a {@code Request} with a given {@link Context} and duration.
-	 * The duration is an override for each {@link ComponentData} within this {@code Request}.
-	 * Providing a duration will set the duration value for each {@link ComponentData}.
-	 * If no duration is provided, each {@link ComponentData} will calculate its own duration from the last successful reported timestamp.
-	 * @param context the {@link Context} for the {@code Request}
-	 * @param duration the duration for each {@link ComponentData}
-	 */
-	public Request(Context context, Integer duration) {
-		super();
-		this.context = context;
-		this.duration = duration;
-	}
-	
-	/**
-     * Get the duration
-     * @return Integer the duration
-     */
-	public Integer getDuration() {
-		return duration;
-	}	
-
-	/**
-	 * Add metric to the {@code Request} for a given component
+	 * Add metric to the {@code Request} for a given component.
+	 * The {@link Number} value is converted to a {@code float}.
+	 * The count is assumed to be 1, while minValue and maxValue are set to value.
+	 * Sum of squares is calculated as the value squared.
 	 * @param component the {@code ComponentData} the metric should be added to
 	 * @param name the name of the metric
 	 * @param value the Number value for the metric
@@ -83,9 +66,29 @@ public class Request {
 	}
 	
 	/**
-     * Send the {@code Request} to the New Relic metrics API.
+	 * Add metric to the {@code Request} for a given component.
+	 * All {@link Number} values are converted to {@code floats}.
+	 * @param component the {@code ComponentData} the metric should be added to
+	 * @param name the name of the metric
+	 * @param count the number of things being measured
+	 * @param value the Number value for the metric
+	 * @param minValue the minimum Number value for the metric
+	 * @param maxValue the maximum Number value for the metric
+	 * @param sumOfSquares the sum of squared values for the metric
+	 * @return MetricData the newly added metric
+	 */
+	public MetricData addMetric(ComponentData component, String name, int count, Number value, Number minValue, Number maxValue, Number sumOfSquares) {
+	    MetricData metricData = null;
+	    if (value != null && minValue != null && maxValue != null && sumOfSquares != null) {
+	        metricData = addMetric(component, new MetricData(name, count, value, minValue, maxValue, sumOfSquares));
+	    }
+	    return metricData;
+	}
+	
+	/**
+     * Deliver the {@code Request} to the New Relic metrics API.
      */
-    public void send() {
+    public void deliver() {
         // do not send an empty request
         if (metrics.isEmpty()) {
             Context.getLogger().fine("No metrics were reported for this poll cycle");
@@ -101,11 +104,11 @@ public class Request {
                 
                 OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
                 try {
-                	Map<String, Object> data = serialize();
-                	
-                	String json = JSONObject.toJSONString(data);
+                    Map<String, Object> data = serialize();
+                    
+                    String json = JSONObject.toJSONString(data);
                     logger.fine("Sending JSON: " + json);
-                	
+                    
                     out.write(json);
                 } finally {
                     out.close();
@@ -114,8 +117,7 @@ public class Request {
                 // process and log response from the collector
                 processResponse(connection);
             } 
-            catch (Exception ex) 
-            {
+            catch (Exception ex) {
                 logger.severe("An error occurred communicating with the New Relic service - " + ex.getMessage());
                 logger.log(Level.FINE, ex.getMessage(), ex);
     
@@ -132,6 +134,14 @@ public class Request {
                 }
             }
         }
+    }
+
+    /**
+     * Is the request delivered
+     * @return boolean
+     */
+    /* package */ boolean isDelivered() {
+        return delivered;
     }
     
     /**
@@ -158,6 +168,7 @@ public class Request {
         		System.exit(1);
             } else if (isResponseOk(responseCode, responseBody)) {
         		Context.getLogger().fine("Server response: " + responseCode + ", " + responseBody);
+        		delivered = true;
         		// update last successful timestamps
         		updateComponentTimestamps();
             } else {
@@ -281,16 +292,30 @@ public class Request {
 		return context.serialize(this);
 	}	
 
-	/* package */ LinkedList<MetricData> getMetrics(ComponentData component) {
-		if( ! metrics.containsKey(component)) {
-			metrics.put(component, new LinkedList<MetricData>() );
-		}
-		return metrics.get(component);
-	}
-	
-	private MetricData addMetric(ComponentData component, MetricData metric) {
-		Context.getLogger().fine(component.guid + " " + metric.name + ":" + metric.value);
-		getMetrics(component).add(metric);
-		return metric;
-	}
+    /* package */ List<MetricData> getMetrics(ComponentData component) {
+        if( ! metrics.containsKey(component)) {
+            metrics.put(component, new LinkedList<MetricData>());
+        }
+        return metrics.get(component);
+    }
+
+    private MetricData addMetric(ComponentData component, MetricData metric) {
+        Context.getLogger().fine(component + " : " + metric);
+        List<MetricData> metrics = getMetrics(component);
+        if (metrics.contains(metric)) {
+            aggregate(metric, metrics);
+        } else {
+            metrics.add(metric);
+        }
+        return metric;
+    }
+
+    private void aggregate(MetricData metric, List<MetricData> metrics) {
+        for (MetricData existingMetric : metrics) {
+            if (existingMetric.name.equals(metric.name)) {
+                existingMetric.aggregrateWith(metric);
+                break;
+            }
+        }
+    }
 }

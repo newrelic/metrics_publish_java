@@ -1,6 +1,6 @@
 package com.newrelic.metrics.publish.binding;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 
@@ -26,6 +26,6 @@ public class AgentDataTest {
         expected.put("version", "1.0.0");
         expected.put("pid", 10);
         
-        assertTrue(expected.equals(data));
+        assertEquals(expected, data);
     }
 }

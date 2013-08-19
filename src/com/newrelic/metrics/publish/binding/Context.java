@@ -42,6 +42,8 @@ public class Context {
     private static Logger LOGGER;
 	private LinkedList<ComponentData> components;
 	
+	private Request lastRequest;
+	
 	/**
 	 * Get a {@link java.util.logging.Logger} object for logging that is registered with the name 'com.newrelic.metrics.publish'.
 	 * <p> Developers should be aware that the provided logging framework may change in the future as the SDK changes. 
@@ -109,6 +111,22 @@ public class Context {
 		super();
 		agentData = new AgentData();
 		components = new LinkedList<ComponentData>();
+	}
+	
+	/**
+	 * Create a {@link Request}.
+	 * If the last {@code Request} was not sent successfully, the last {@code Request} will be reused.
+	 * This guarantees that previously reported metrics will be aggregated with new metrics, and 
+	 * no metric data will be lost if a request was not sent successfully.
+	 * @return request
+	 */
+	public Request createRequest() {
+	    if (lastRequest != null && !lastRequest.isDelivered()) {
+	        return lastRequest;
+	    } else {
+	        lastRequest = new Request(this);
+	        return lastRequest;
+	    }
 	}
 	
 	/**
