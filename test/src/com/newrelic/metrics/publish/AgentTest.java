@@ -21,7 +21,7 @@ public class AgentTest {
         OneCycleAgent agent = new OneCycleAgent("com.test.onecycle", "1.2.3");
         agent.prepareToRun();
         
-        Request request = new Request(agent.getCollector().getContext(), 60);
+        Request request = agent.getCollector().getContext().createRequest();
         agent.getCollector().setRequest(request);
         
         // one poll cycle

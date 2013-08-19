@@ -34,7 +34,6 @@ public class Request {
 	
 	private final Context context;
 	private final HashMap<ComponentData, LinkedList<MetricData>> metrics = new HashMap<ComponentData, LinkedList<MetricData>>(); 
-	private final Integer duration;
 	
 	private Date sentAt;
 	private boolean delivered = false;
@@ -45,31 +44,8 @@ public class Request {
 	 * @param context the {@link Context} for the {@code Request}
 	 */
 	public Request(Context context) {
-	   this(context, null);
+	    this.context = context;
 	}
-
-	/**
-	 * Constructs a {@code Request} with a given {@link Context} and duration.
-	 * The duration is an override for each {@link ComponentData} within this {@code Request}.
-	 * Providing a duration will set the duration value for each {@link ComponentData}.
-	 * If no duration is provided, each {@link ComponentData} will calculate its own duration from the last successful reported timestamp.
-	 * <p> See also {@link Context#createRequest()}
-	 * @param context the {@link Context} for the {@code Request}
-	 * @param duration the duration for each {@link ComponentData}
-	 */
-	public Request(Context context, Integer duration) {
-		super();
-		this.context = context;
-		this.duration = duration;
-	}
-	
-	/**
-     * Get the duration
-     * @return Integer the duration
-     */
-	public Integer getDuration() {
-		return duration;
-	}	
 
 	/**
 	 * Add metric to the {@code Request} for a given component.

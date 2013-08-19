@@ -22,9 +22,7 @@ public class ComponentData {
         output.put("name", name);
         output.put("guid", guid); 
         
-        // read override duration from request if set, else calculate duration from last timestamp
-        int duration = (request.getDuration() != null) ? request.getDuration() : calculateDuration();
-        output.put("duration", duration);
+        output.put("duration", calculateDuration());
         
         HashMap<String, Object> metricsOutput = new HashMap<String, Object>();
         output.put("metrics", metricsOutput);
