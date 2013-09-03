@@ -20,11 +20,11 @@ public class BindingFactory {
     }
     
     public static Context createContextWithUnavailableResponse() {
-        Context context = new MockContext(HttpURLConnection.HTTP_UNAVAILABLE, "{\"status\":\"ok\"}");
-        context.agentData.host = "test host";
-        context.agentData.pid = 5;
-        context.agentData.version = "1.2.3";
-        return context;
+        return createContext(HttpURLConnection.HTTP_UNAVAILABLE, "{\"status\":\"ok\"}");
+    }
+    
+    public static Context createContextWithBadResponse() {
+        return createContext(HttpURLConnection.HTTP_BAD_REQUEST, "{\"status\":\"error\"}");
     }
     
     public static Context createContext(int responseCode, String responseBody) {
@@ -68,7 +68,11 @@ public class BindingFactory {
             
             expect(mockConnection.getOutputStream()).andReturn(new ByteArrayOutputStream(10000));
             expect(mockConnection.getResponseCode()).andReturn(responseCode);
-            expect(mockConnection.getInputStream()).andReturn(new ByteArrayInputStream(responseBody.getBytes()));
+            if (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) {
+                expect(mockConnection.getInputStream()).andReturn(new ByteArrayInputStream(responseBody.getBytes()));
+            } else {
+                expect(mockConnection.getErrorStream()).andReturn(new ByteArrayInputStream(responseBody.getBytes()));
+            }
             
             replay(mockConnection);
 

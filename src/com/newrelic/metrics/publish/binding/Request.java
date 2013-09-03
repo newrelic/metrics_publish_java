@@ -31,6 +31,7 @@ public class Request {
     private static final String STATUS = "status";
     private static final String OK_STATUS = "ok";
     private static final String DISABLE_NEW_RELIC = "DISABLE_NEW_RELIC";
+    private static final int EXIT_CODE = 1;
 	
 	private final Context context;
 	private final HashMap<ComponentData, LinkedList<MetricData>> metrics = new HashMap<ComponentData, LinkedList<MetricData>>(); 
@@ -116,10 +117,9 @@ public class Request {
                 
                 // process and log response from the collector
                 processResponse(connection);
-            } 
+            }
             catch (Exception ex) {
-                logger.severe("An error occurred communicating with the New Relic service - " + ex.getMessage());
-                logger.log(Level.FINE, ex.getMessage(), ex);
+                logger.severe("An error occurred communicating with the New Relic service - " + ex);
     
                 if (connection != null) {
                     try {
@@ -155,25 +155,30 @@ public class Request {
         // do not log 503 responses
         if (isCollectorUnavailable(responseCode)) {
         	Context.getLogger().fine("Collector temporarily unavailable...continuing");
-        } else { 	
+        }
+        else {
         	// read server response
         	String responseBody = getServerResponse(responseCode, connection);
         	
         	if (isResponseEmpty(responseBody)) {
         		Context.getLogger().info("Failed server response: no response");
-        	} else if (isRemotelyDisabled(responseCode, responseBody)) {
+        	}
+        	else if (isRemotelyDisabled(responseCode, responseBody)) {
         		// Remote disabling by New Relic -- exit
         	    Context.getLogger().severe("Agent has been disabled remotely by New Relic");
         		System.err.println("SEVERE: Agent has been disabled remotely by New Relic");
-        		System.exit(1);
-            } else if (isResponseOk(responseCode, responseBody)) {
+        		System.exit(EXIT_CODE);
+            }
+        	else if (isResponseOk(responseCode, responseBody)) {
         		Context.getLogger().fine("Server response: " + responseCode + ", " + responseBody);
         		delivered = true;
+        		context.setAggregationStartedAt(sentAt);
         		// update last successful timestamps
         		updateComponentTimestamps();
-            } else {
+            }
+            else {
         		// all other response codes will fail
-        		Context.getLogger().info("Failed server response: " + responseCode + ", " + responseBody);
+        		Context.getLogger().severe("Failed server response: " + responseCode + ", " + responseBody);
         	}
         }
     }
@@ -266,14 +271,13 @@ public class Request {
      * @return String the status message
      */
     private String getStatusMessage(String responseBody) {
-    	Object jsonObj = JSONValue.parse(responseBody);
-    	JSONObject json = (JSONObject) jsonObj;
-    	Object status = json.get(STATUS);
-    	if (status != null) {
-    		return (String) status;
-    	} else {
-    		return null;
-    	}
+        Object jsonObj = JSONValue.parse(responseBody);
+        JSONObject json = (JSONObject) jsonObj;
+        if (json != null) {
+            return (String) json.get(STATUS);
+        } else {
+            return null;  
+        }
     }
     
     /**
