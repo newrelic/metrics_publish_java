@@ -273,12 +273,10 @@ public class Request {
         Object jsonObj = JSONValue.parse(responseBody);
         JSONObject json = (JSONObject) jsonObj;
         if (json != null) {
-            Object status = json.get(STATUS);
-            if (status != null) {
-                return (String) status;
-            }
+            return (String) json.get(STATUS);
+        } else {
+            return null;  
         }
-        return null;
     }
     
     /**
