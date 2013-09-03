@@ -31,6 +31,7 @@ public class Request {
     private static final String STATUS = "status";
     private static final String OK_STATUS = "ok";
     private static final String DISABLE_NEW_RELIC = "DISABLE_NEW_RELIC";
+    private static final int EXIT_CODE = 1;
 	
 	private final Context context;
 	private final HashMap<ComponentData, LinkedList<MetricData>> metrics = new HashMap<ComponentData, LinkedList<MetricData>>(); 
@@ -166,7 +167,7 @@ public class Request {
         		// Remote disabling by New Relic -- exit
         	    Context.getLogger().severe("Agent has been disabled remotely by New Relic");
         		System.err.println("SEVERE: Agent has been disabled remotely by New Relic");
-        		System.exit(1);
+        		System.exit(EXIT_CODE);
             }
         	else if (isResponseOk(responseCode, responseBody)) {
         		Context.getLogger().fine("Server response: " + responseCode + ", " + responseBody);
