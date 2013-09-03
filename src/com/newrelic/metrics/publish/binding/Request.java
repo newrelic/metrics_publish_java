@@ -116,10 +116,9 @@ public class Request {
                 
                 // process and log response from the collector
                 processResponse(connection);
-            } 
+            }
             catch (Exception ex) {
-                logger.severe("An error occurred communicating with the New Relic service - " + ex.getMessage());
-                logger.log(Level.FINE, ex.getMessage(), ex);
+                logger.severe("An error occurred communicating with the New Relic service - " + ex);
     
                 if (connection != null) {
                     try {
@@ -155,23 +154,28 @@ public class Request {
         // do not log 503 responses
         if (isCollectorUnavailable(responseCode)) {
         	Context.getLogger().fine("Collector temporarily unavailable...continuing");
-        } else { 	
+        }
+        else {
         	// read server response
         	String responseBody = getServerResponse(responseCode, connection);
         	
         	if (isResponseEmpty(responseBody)) {
         		Context.getLogger().info("Failed server response: no response");
-        	} else if (isRemotelyDisabled(responseCode, responseBody)) {
+        	}
+        	else if (isRemotelyDisabled(responseCode, responseBody)) {
         		// Remote disabling by New Relic -- exit
         	    Context.getLogger().severe("Agent has been disabled remotely by New Relic");
         		System.err.println("SEVERE: Agent has been disabled remotely by New Relic");
         		System.exit(1);
-            } else if (isResponseOk(responseCode, responseBody)) {
+            }
+        	else if (isResponseOk(responseCode, responseBody)) {
         		Context.getLogger().fine("Server response: " + responseCode + ", " + responseBody);
         		delivered = true;
+        		context.setAggregationStartedAt(sentAt);
         		// update last successful timestamps
         		updateComponentTimestamps();
-            } else {
+            }
+            else {
         		// all other response codes will fail
         		Context.getLogger().info("Failed server response: " + responseCode + ", " + responseBody);
         	}

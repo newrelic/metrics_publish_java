@@ -1,5 +1,11 @@
 ## New Relic Platform Java SDK Change Log ##
 
+### v1.1.1 - Unreleased ###
+
+**Features**
+
+* Added 20 minute aggregation limit for when an agent cannot connect to New Relic's Metric API.
+
 ### v1.1.0 - August 19th, 2013 ###
 
 **Features**

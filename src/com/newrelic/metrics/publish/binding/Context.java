@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -34,6 +35,8 @@ public class Context {
 	private static final String LOG_CONFIG_FILE = "config/logging.properties";
 	private static final String LOGGER_NAME = "com.newrelic.metrics.publish";
 	
+	private static final long AGGREGATION_LIMIT = TimeUnit.MINUTES.toMillis(20);
+	
 	public String licenseKey;
 	public AgentData agentData;
 	
@@ -43,6 +46,7 @@ public class Context {
 	private LinkedList<ComponentData> components;
 	
 	private Request lastRequest;
+	private Date aggregationStartedAt;
 	
 	/**
 	 * Get a {@link java.util.logging.Logger} object for logging that is registered with the name 'com.newrelic.metrics.publish'.
@@ -104,31 +108,57 @@ public class Context {
 		setLogger(logger);
 	}
 	
-	/**
+    /**
      * Constructs a {@code Context}
      */
-	public Context() {
-		super();
-		agentData = new AgentData();
-		components = new LinkedList<ComponentData>();
-	}
-	
-	/**
-	 * Create a {@link Request}.
-	 * If the last {@code Request} was not sent successfully, the last {@code Request} will be reused.
-	 * This guarantees that previously reported metrics will be aggregated with new metrics, and 
-	 * no metric data will be lost if a request was not sent successfully.
-	 * @return request
-	 */
-	public Request createRequest() {
-	    if (lastRequest != null && !lastRequest.isDelivered()) {
-	        return lastRequest;
-	    } else {
-	        lastRequest = new Request(this);
-	        return lastRequest;
-	    }
-	}
-	
+    public Context() {
+        super();
+        agentData = new AgentData();
+        components = new LinkedList<ComponentData>();
+        lastRequest = new Request(this);
+        aggregationStartedAt = new Date();
+    }
+
+    /**
+     * Create a {@link Request}.
+     * If the last {@code Request} was not sent successfully, the last {@code Request} will be reused.
+     * This guarantees that previously reported metrics will be aggregated with new metrics, and 
+     * no metric data will be lost if a request was not sent successfully.
+     * @return request
+     */
+    public Request createRequest() {
+        if (isPastAggregationLimit()) {
+            lastRequest = new Request(this);
+            for (ComponentData component : components) {
+                component.setLastSuccessfulReportedAt(null);
+            }
+        }
+        else if (isLastRequestDelivered()) {
+            lastRequest = new Request(this);
+        }
+        return lastRequest;
+    }
+
+    private boolean isLastRequestDelivered() {
+        return lastRequest.isDelivered();
+    }
+
+    /* package */ boolean isPastAggregationLimit() {
+        if (aggregationStartedAt != null) {
+            long aggregationDuration = new Date().getTime() - aggregationStartedAt.getTime();
+            return aggregationDuration > AGGREGATION_LIMIT;
+        }
+        return false;
+    }
+
+    /* package */ void setAggregationStartedAt(Date aggregationStartedAt) {
+        this.aggregationStartedAt = aggregationStartedAt;
+    }
+
+    /* package */ Date getAggregationStartedAt() {
+        return aggregationStartedAt;
+    }
+
 	/**
      * Create a {@link ComponentData} that reported metrics will belong to.
      * @return ComponentData
