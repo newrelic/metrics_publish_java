@@ -177,7 +177,7 @@ public class Request {
             }
             else {
         		// all other response codes will fail
-        		Context.getLogger().info("Failed server response: " + responseCode + ", " + responseBody);
+        		Context.getLogger().severe("Failed server response: " + responseCode + ", " + responseBody);
         	}
         }
     }
@@ -270,14 +270,15 @@ public class Request {
      * @return String the status message
      */
     private String getStatusMessage(String responseBody) {
-    	Object jsonObj = JSONValue.parse(responseBody);
-    	JSONObject json = (JSONObject) jsonObj;
-    	Object status = json.get(STATUS);
-    	if (status != null) {
-    		return (String) status;
-    	} else {
-    		return null;
-    	}
+        Object jsonObj = JSONValue.parse(responseBody);
+        JSONObject json = (JSONObject) jsonObj;
+        if (json != null) {
+            Object status = json.get(STATUS);
+            if (status != null) {
+                return (String) status;
+            }
+        }
+        return null;
     }
     
     /**
