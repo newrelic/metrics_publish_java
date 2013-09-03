@@ -36,6 +36,7 @@ public class Context {
 	private static final String LOGGER_NAME = "com.newrelic.metrics.publish";
 	
 	private static final long AGGREGATION_LIMIT = TimeUnit.MINUTES.toMillis(20);
+	private static final int CONNECTION_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(20);
 	
 	public String licenseKey;
 	public AgentData agentData;
@@ -218,6 +219,8 @@ public class Context {
         connection.addRequestProperty("X-License-Key", licenseKey);
         connection.addRequestProperty("Content-Type", "application/json");
         connection.addRequestProperty("Accept", "application/json");
+        connection.setConnectTimeout(CONNECTION_TIMEOUT);
+        connection.setReadTimeout(CONNECTION_TIMEOUT);
         
         // if not verifying ssl host and using https, add custom hostname verifier
         // else use default hostname verifier
