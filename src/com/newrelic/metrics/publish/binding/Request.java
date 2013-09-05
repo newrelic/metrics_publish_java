@@ -168,7 +168,7 @@ public class Request {
         	else if (isResponseOk(responseCode, responseBody)) {
         		Context.getLogger().fine("Server response: " + responseCode + ", " + responseBody);
         		delivered = true;
-                Date deliveredAt = new Date();
+        		Date deliveredAt = new Date();
         		context.setAggregationStartedAt(deliveredAt);
         		// update last successful timestamps
         		updateComponentTimestamps(deliveredAt);
