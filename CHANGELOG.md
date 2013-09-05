@@ -1,5 +1,11 @@
 ## New Relic Platform Java SDK Change Log ##
 
+### v1.1.2 - Unreleased ###
+
+**Bug Fixes**
+
+* Increased accuracy for timestamps in calculating component durations.
+
 ### v1.1.1 - September 4, 2013 ###
 
 **Features**
