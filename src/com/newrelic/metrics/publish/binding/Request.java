@@ -36,7 +36,6 @@ public class Request {
 	private final Context context;
 	private final HashMap<ComponentData, LinkedList<MetricData>> metrics = new HashMap<ComponentData, LinkedList<MetricData>>(); 
 	
-	private Date sentAt;
 	private boolean delivered = false;
 	
 	/**
@@ -96,9 +95,6 @@ public class Request {
         } else {
             HttpURLConnection connection = null;
             Logger logger = Context.getLogger();
-            
-            // timestamp for sent request
-            sentAt = new Date();
             
             try {
                 connection = context.createUrlConnectionForOutput();
@@ -172,9 +168,10 @@ public class Request {
         	else if (isResponseOk(responseCode, responseBody)) {
         		Context.getLogger().fine("Server response: " + responseCode + ", " + responseBody);
         		delivered = true;
-        		context.setAggregationStartedAt(sentAt);
+                Date deliveredAt = new Date();
+        		context.setAggregationStartedAt(deliveredAt);
         		// update last successful timestamps
-        		updateComponentTimestamps();
+        		updateComponentTimestamps(deliveredAt);
             }
             else {
         		// all other response codes will fail
@@ -283,12 +280,9 @@ public class Request {
     /**
      * Update component timestamps for last successful reported.
      */
-    private void updateComponentTimestamps() {
-        if (sentAt == null) {
-            throw new IllegalStateException("sentAt timestamp should be set");
-        }
+    private void updateComponentTimestamps(Date deliveredAt) {
         for (ComponentData component : metrics.keySet()) {
-            component.setLastSuccessfulReportedAt(sentAt);
+            component.setLastSuccessfulReportedAt(deliveredAt);
         }
     }
     
