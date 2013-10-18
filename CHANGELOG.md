@@ -6,6 +6,8 @@
 
 * Increased accuracy for timestamps in calculating component durations.
 
+* Logging improvements
+
 ### v1.1.1 - September 4, 2013 ###
 
 **Features**
