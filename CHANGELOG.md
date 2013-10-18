@@ -6,6 +6,10 @@
 
 * Increased accuracy for timestamps in calculating component durations.
 
+**Improvements**
+
+* Added SDK lifecycle logging enhancements.
+
 ### v1.1.1 - September 4, 2013 ###
 
 **Features**
