@@ -149,9 +149,9 @@ public class Runner {
         			Agent agent = iterator.next();
                 	Request request = agent.getCollector().getContext().createRequest();
                 	agent.getCollector().setRequest(request);
-                	Context.getLogger().fine("Beginning call to pollCycle() for Agent: '" + agent.getComponentHumanLabel() + "'");
+                	Context.getLogger().fine("Beginning poll cycle for agent: '" + agent.getComponentHumanLabel() + "'");
                 	agent.pollCycle();
-                	Context.getLogger().fine("Ending pollCycle() call for Agent: '" + agent.getComponentHumanLabel() + "'");
+                	Context.getLogger().fine("Ending poll cycle for agent: '" + agent.getComponentHumanLabel() + "'");
                 	request.deliver();
                 	agent.getCollector().setRequest(null); //make sure we're not reusing the request
         		}
