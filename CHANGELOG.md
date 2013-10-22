@@ -1,6 +1,6 @@
 ## New Relic Platform Java SDK Change Log ##
 
-### v1.1.2 - Unreleased ###
+### v1.1.2 - October 22, 2013 ###
 
 **Bug Fixes**
 
@@ -16,25 +16,25 @@
 
 * Added 20 minute aggregation limit for when an agent cannot connect to New Relic's Metric API.
 
-### v1.1.0 - August 19th, 2013 ###
+### v1.1.0 - August 19, 2013 ###
 
 **Features**
 
 * Added support for metric aggregation when the agent cannot connect to New Relic's Metric API.
 
-### v1.0.4 - July 24th, 2013 ###
+### v1.0.4 - July 24, 2013 ###
 
 **Features**
 
 * Added support for automatic handling of component durations between successful metric publishes.
 
-### v1.0.3 - July 18th, 2013 ###
+### v1.0.3 - July 18, 2013 ###
 
 **Bug Fixes**
 
 * Fixed `EpochCounter#process` issue where sub-second intervals (e.g. 400 ms) would return non-null values.
 
-### v1.0.2 - July 7th, 2013 ###
+### v1.0.2 - July 7, 2013 ###
 
 **Bug Fixes**
 
