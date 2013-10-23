@@ -8,11 +8,11 @@ import java.util.HashMap;
  * Represents a component that reported metrics will be associated with for a {@link Request}.
  */
 public class ComponentData {
-    
+
     public String name;
     public String guid;
     private Date lastSuccessfulReportedAt;
-    
+
     /* package */ ComponentData() {
         super();
     }
@@ -20,20 +20,20 @@ public class ComponentData {
     /* package */ HashMap<String,Object> serialize(Request request) {
         HashMap<String, Object> output = new HashMap<String, Object>();
         output.put("name", name);
-        output.put("guid", guid); 
-        
+        output.put("guid", guid);
+
         output.put("duration", calculateDuration());
-        
+
         HashMap<String, Object> metricsOutput = new HashMap<String, Object>();
         output.put("metrics", metricsOutput);
-        
+
         for (MetricData metric : request.getMetrics(this)) {
             metric.serialize(metricsOutput);
         }
-        
+
         return output;
     }
-    
+
     /**
      * Set date timestamp for the last successful report
      * @param lastSuccessfulReportedAt the date of the last successful report
@@ -57,7 +57,7 @@ public class ComponentData {
         long duration = (long) Math.ceil((now - lastSuccessfulReportedAt.getTime()) / 1000.0);
         return (int) duration;
     }
-    
+
     public String toString() {
         return "ComponentData(" + name + ":" + guid + ")";
     }
