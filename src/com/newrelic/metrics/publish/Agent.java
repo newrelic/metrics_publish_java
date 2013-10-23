@@ -47,6 +47,20 @@ public abstract class Agent {
     public abstract String getComponentHumanLabel();
 
     /**
+     * Sets the {@link Context} for this agent.
+     * @param context
+     */
+    public void setContext(Context context) {
+        collector.setContext(context);
+
+        // Since this data comes from the configured agents, it needs to be initialized here.  But only set it once since
+        // all agents should share the same version.
+        if(context.agentData.version == null) {
+            context.agentData.version = version;
+        }
+    }
+
+    /**
      * A hook called when the {@code Agent} is setup.
      * Subclasses may override but must call {@code super}.
      */

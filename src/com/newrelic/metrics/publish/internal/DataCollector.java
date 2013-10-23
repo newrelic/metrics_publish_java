@@ -12,8 +12,6 @@ import com.newrelic.metrics.publish.binding.Request;
 public class DataCollector {
 
     /* package */ static final String METRIC_PREFIX = "Component/";
-    /* package */ static final String DEFAULT_HOST = "host";
-    /* package */ static final int DEFAULT_PID = 0;
 
     private ComponentData componentData;
     private Request request;
@@ -29,15 +27,6 @@ public class DataCollector {
      */
     public DataCollector(Agent agent) {
         this.agent = agent;
-
-        //The agentData and componentData parts of the Request remain for the duration of this instance
-        context = new Context();
-        context.agentData.host = DEFAULT_HOST;
-        context.agentData.version = agent.getVersion();
-        context.agentData.pid = DEFAULT_PID;
-        componentData = context.createComponent();
-        componentData.guid = agent.getGUID();
-        componentData.name = agent.getComponentHumanLabel();
     }
 
     /**
@@ -54,6 +43,17 @@ public class DataCollector {
      */
     public Context getContext() {
         return context;
+    }
+
+    /**
+     * Set the {@link Context}
+     * @param context
+     */
+    public void setContext(Context context) {
+        //The agentData and componentData parts of the Request remain for the duration of this instance
+        componentData = context.createComponent();
+        componentData.guid = agent.getGUID();
+        componentData.name = agent.getComponentHumanLabel();
     }
 
     /**

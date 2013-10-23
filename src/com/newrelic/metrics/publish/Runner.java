@@ -25,17 +25,21 @@ import com.newrelic.metrics.publish.configuration.SDKConfiguration;
  */
 public class Runner {
 
-    private List<Agent> agents;
+    private static final String DEFAULT_HOST = "host";
+    private static final int DEFAULT_PID = 0;
+
+    private List<Agent> componentAgents;
     private final SDKConfiguration config;
     private int pollInterval = 60;
     private HashSet<AgentFactory> factories = new HashSet<AgentFactory>();
+    private Context context;
 
     /**
      * Constructs a {@code Runner}
      */
     public Runner() {
         super();
-        agents = new LinkedList<Agent>();
+        componentAgents = new LinkedList<Agent>();
 
         try {
             config = new SDKConfiguration();
@@ -59,7 +63,7 @@ public class Runner {
      * @param agent the {@link Agent} to be registered
      */
     public void register(Agent agent) {
-        agents.add(agent);
+        componentAgents.add(agent);
     }
 
     /**
@@ -119,16 +123,21 @@ public class Runner {
             Context.getLogger().info("Using host: " + config.internalGetServiceURI());
         }
 
-        for (Iterator<Agent> iterator = agents.iterator(); iterator.hasNext();) {
+        context = new Context();
+        context.agentData.host = DEFAULT_HOST;
+        context.agentData.pid = DEFAULT_PID;
+
+        for (Iterator<Agent> iterator = componentAgents.iterator(); iterator.hasNext();) {
             Agent agent = iterator.next();
             agent.prepareToRun();
+            agent.setContext(context);
             agent.setupMetrics();
             //TODO this is a really awkward place to set the license key on the request
-            agent.getCollector().getContext().licenseKey = config.getLicenseKey();
+            context.licenseKey = config.getLicenseKey();
             if(config.internalGetServiceURI() != null) {
-                agent.getCollector().getContext().internalSetServiceURI(config.internalGetServiceURI());
+                context.internalSetServiceURI(config.internalGetServiceURI());
             }
-            agent.getCollector().getContext().internalSetSSLHostVerification(config.isSSLHostVerificationEnabled());
+            context.internalSetSSLHostVerification(config.isSSLHostVerificationEnabled());
         }
     }
 
@@ -145,16 +154,18 @@ public class Runner {
         public void run() {
             try {
                 Context.getLogger().fine("Harvest and report data");
-                for (Iterator<Agent> iterator = agents.iterator(); iterator.hasNext();) {
+
+                Request request = context.createRequest();
+
+                for (Iterator<Agent> iterator = componentAgents.iterator(); iterator.hasNext();) {
                     Agent agent = iterator.next();
-                    Request request = agent.getCollector().getContext().createRequest();
                     agent.getCollector().setRequest(request);
                     Context.getLogger().fine("Beginning poll cycle for agent: '" + agent.getComponentHumanLabel() + "'");
                     agent.pollCycle();
                     Context.getLogger().fine("Ending poll cycle for agent: '" + agent.getComponentHumanLabel() + "'");
-                    request.deliver();
-                    agent.getCollector().setRequest(null); //make sure we're not reusing the request
                 }
+
+                request.deliver();
             } catch (Exception e) {
                 // log exception and continue polling -- could be a transient issue
                 // java.lang.Error(s) are thrown and handled by the main thread
