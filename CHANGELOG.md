@@ -1,5 +1,11 @@
 ## New Relic Platform Java SDK Change Log ##
 
+### v1.2.0 - October 28, 2013 ###
+
+**Improvements**
+
+* Added ability to consolidate requests into a single REST request per poll cycle.
+
 ### v1.1.2 - October 22, 2013 ###
 
 **Bug Fixes**

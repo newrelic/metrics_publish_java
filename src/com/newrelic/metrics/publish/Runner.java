@@ -25,9 +25,6 @@ import com.newrelic.metrics.publish.configuration.SDKConfiguration;
  */
 public class Runner {
 
-    private static final String DEFAULT_HOST = "host";
-    private static final int DEFAULT_PID = 0;
-
     private List<Agent> componentAgents;
     private final SDKConfiguration config;
     private int pollInterval = 60;
@@ -124,13 +121,10 @@ public class Runner {
         }
 
         context = new Context();
-        context.agentData.host = DEFAULT_HOST;
-        context.agentData.pid = DEFAULT_PID;
 
         for (Iterator<Agent> iterator = componentAgents.iterator(); iterator.hasNext();) {
             Agent agent = iterator.next();
-            agent.prepareToRun();
-            agent.setContext(context);
+            agent.prepareToRun(context);
             agent.setupMetrics();
             //TODO this is a really awkward place to set the license key on the request
             context.licenseKey = config.getLicenseKey();

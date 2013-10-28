@@ -47,20 +47,6 @@ public abstract class Agent {
     public abstract String getComponentHumanLabel();
 
     /**
-     * Sets the {@link Context} for this agent.
-     * @param context
-     */
-    public void setContext(Context context) {
-        collector.setContext(context);
-
-        // Since this data comes from the configured agents, it needs to be initialized here.  But only set it once since
-        // all agents should share the same version.
-        if(context.agentData.version == null) {
-            context.agentData.version = version;
-        }
-    }
-
-    /**
      * A hook called when the {@code Agent} is setup.
      * Subclasses may override but must call {@code super}.
      */
@@ -87,11 +73,25 @@ public abstract class Agent {
     /**
      * A hook called when the {@code Agent} is setup.
      * Subclasses may override but must call {@code super}.
+     * This function has been deprecated for prepareToRun({@code Context})
      */
+    @Deprecated
     public void prepareToRun() {
         //This needs to be done after being configured to ensure the binding model created by the DataCollector
         //has the most recent values from this
-        collector = new DataCollector(this);
+        Context context = new Context();
+        prepareToRun(context);
+    }
+
+    public void prepareToRun(Context context) {
+    	collector = new DataCollector(this);
+        collector.setContext(context);
+
+        // Since this data comes from the configured agents, it needs to be initialized here.  But only set it once since
+        // all agents should share the same version.
+        if(context.agentData.version == null) {
+            context.agentData.version = version;
+        }
     }
 
     /**

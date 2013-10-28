@@ -23,12 +23,9 @@ public class AgentTest {
     public void testOnePollCycle() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         // agent to test
         OneCycleAgent agent = new OneCycleAgent("TestAgent");
-        agent.prepareToRun();
 
         Context context = new Context();
-        context.agentData.host = "host";
-        context.agentData.pid = 0;
-        agent.setContext(context);
+        agent.prepareToRun(context);
 
         Request request = context.createRequest();
 
@@ -75,15 +72,12 @@ public class AgentTest {
     public void testOnePollCycleWithMultipleComponents() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 
         Context context = new Context();
-        context.agentData.host = "host";
-        context.agentData.pid = 0;
         Request request = context.createRequest();
 
         for(int i = 0; i < 3; i++) {
             // agent to test
             OneCycleAgent agent = new OneCycleAgent("TestAgent" + i);
-            agent.prepareToRun();
-            agent.setContext(context);
+            agent.prepareToRun(context);
             agent.getCollector().setRequest(request);
 
             // one poll cycle
