@@ -79,12 +79,11 @@ public abstract class Agent {
     public void prepareToRun() {
         //This needs to be done after being configured to ensure the binding model created by the DataCollector
         //has the most recent values from this
-        Context context = new Context();
-        prepareToRun(context);
+        prepareToRun(new Context());
     }
 
     public void prepareToRun(Context context) {
-    	collector = new DataCollector(this);
+        collector = new DataCollector(this);
         collector.setContext(context);
 
         // Since this data comes from the configured agents, it needs to be initialized here.  But only set it once since

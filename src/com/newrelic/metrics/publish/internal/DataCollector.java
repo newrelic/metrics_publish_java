@@ -50,6 +50,8 @@ public class DataCollector {
      * @param context
      */
     public void setContext(Context context) {
+        this.context = context;
+
         //The agentData and componentData parts of the Request remain for the duration of this instance
         componentData = context.createComponent();
         componentData.guid = agent.getGUID();
