@@ -1,5 +1,11 @@
 ## New Relic Platform Java SDK Change Log ##
 
+### v1.2.0 - Unreleased ###
+
+**Improvements**
+
+* Added ability to consolidate sending multiple component agent metrics in a single REST request per poll cycle.
+
 ### v1.1.2 - October 22, 2013 ###
 
 **Bug Fixes**
