@@ -4,7 +4,7 @@
 
 **Improvements**
 
-* Added ability to consolidate requests into a single REST request per poll cycle.
+* Added ability to consolidate sending multiple component agent metrics in a single REST request per poll cycle.
 
 ### v1.1.2 - October 22, 2013 ###
 
