@@ -246,7 +246,11 @@ public class Context {
         output.put("components", componentsOutput);
 
         for (ComponentData component : components) {
-            componentsOutput.add(component.serialize(request));
+            HashMap<String, Object> map = component.serialize(request);
+
+            if(!map.isEmpty()) {
+                componentsOutput.add(map);
+            }
         }
 
         return output;

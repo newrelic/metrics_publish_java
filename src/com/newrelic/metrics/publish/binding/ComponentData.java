@@ -2,6 +2,7 @@ package com.newrelic.metrics.publish.binding;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Provisional API which is subject to change.
@@ -19,16 +20,21 @@ public class ComponentData {
 
     /* package */ HashMap<String,Object> serialize(Request request) {
         HashMap<String, Object> output = new HashMap<String, Object>();
-        output.put("name", name);
-        output.put("guid", guid);
 
-        output.put("duration", calculateDuration());
+        List<MetricData> metrics = request.getMetrics(this);
 
-        HashMap<String, Object> metricsOutput = new HashMap<String, Object>();
-        output.put("metrics", metricsOutput);
+        if(!metrics.isEmpty()) {
+            output.put("name", name);
+            output.put("guid", guid);
 
-        for (MetricData metric : request.getMetrics(this)) {
-            metric.serialize(metricsOutput);
+            output.put("duration", calculateDuration());
+
+            HashMap<String, Object> metricsOutput = new HashMap<String, Object>();
+            output.put("metrics", metricsOutput);
+
+            for (MetricData metric : metrics) {
+                metric.serialize(metricsOutput);
+            }
         }
 
         return output;
