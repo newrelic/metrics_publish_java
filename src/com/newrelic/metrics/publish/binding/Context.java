@@ -249,7 +249,7 @@ public class Context {
             HashMap<String, Object> map = component.serialize(request);
 
             if(!map.isEmpty()) {
-                componentsOutput.add(component.serialize(request));
+                componentsOutput.add(map);
             }
         }
 
