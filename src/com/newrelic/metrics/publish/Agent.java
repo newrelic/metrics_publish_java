@@ -82,6 +82,12 @@ public abstract class Agent {
         prepareToRun(new Context());
     }
 
+    /**
+     * A hook called when the {@code Agent} is setup.
+     * Subclasses may override but must call {@code super}.
+     * Any agents sharing a single context will send their metrics
+     * in a single REST request.
+     */
     public void prepareToRun(Context context) {
         collector = new DataCollector(this);
         collector.setContext(context);
