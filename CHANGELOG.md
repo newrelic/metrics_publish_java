@@ -1,5 +1,11 @@
 ## New Relic Platform Java SDK Change Log ##
 
+### v1.2.1 - Unreleased ###
+
+**Bug Fixes**
+
+* Fixed logic around EpochCounters processing null values. 
+
 ### v1.2.0 - October 29, 2013 ###
 
 **Improvements**

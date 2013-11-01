@@ -7,7 +7,7 @@ import java.util.Date;
  */
 public class EpochCounter implements Processor {
     private Number lastValue;
-    private Date lastTime;
+    /* Package */ Date lastTime;
 
     /**
      * Constructs an {@code EpochCounter}
@@ -17,7 +17,7 @@ public class EpochCounter implements Processor {
     }
 
     /**
-     * Process a metric value over a time interval. 
+     * Process a metric value over a time interval.
      * Calling process for a metric value at an interval less than 1 second is not supported. Null is returned for sub-second processing.
      */
     @Override
@@ -25,7 +25,7 @@ public class EpochCounter implements Processor {
         Date currentTime = new Date();
         Number ret = null;
 
-        if (lastValue != null && lastTime != null && currentTime.after(lastTime)) {
+        if (val != null && lastValue != null && lastTime != null && currentTime.after(lastTime)) {
             long timeDiffInSeconds = (currentTime.getTime() - lastTime.getTime()) / 1000;
             if (timeDiffInSeconds > 0) {
                 ret = (val.floatValue() - lastValue.floatValue()) / timeDiffInSeconds;
