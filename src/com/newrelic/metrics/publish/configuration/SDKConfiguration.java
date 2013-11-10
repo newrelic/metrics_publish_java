@@ -19,8 +19,8 @@ public class SDKConfiguration {
     private String licenseKey;
     private String serviceURI;
     private boolean sslHostVerification = true;
-	private final String propertyFileName = "newrelic.properties";
-	private final String configPath = "config";
+	private static final String propertyFileName = "newrelic.properties";
+	private static final String configPath = "config";
 	
 	/**
      * Constructs a {@code SDKConfiguration}
@@ -104,21 +104,23 @@ public class SDKConfiguration {
 	public boolean isSSLHostVerificationEnabled() {
 	    return sslHostVerification;
 	}
+	
+	public static String getConfigDirectory() {
+		String path = System.getProperty("com.newrelic.platform.config.dir");
+		if (path == null) {
+			path = configPath;
+		}
+		
+		return path;
+	}
     
     private File getConfigurationFile() throws ConfigurationException {
-//		TODO system property for config path
-//      String path = System.getProperty("com.newrelic.platform.config");        
-    	String path = null;
-        if (path == null) {
-	        path = configPath + File.separatorChar + propertyFileName;
-	        File file = new File(path);
-	        if (!file.exists()) {
-	        	throw logAndThrow("Cannot find config file " + path);
-	        }
-	        return file;
-        } else {
-            return new File(path);    
-        }
+    	String path = getConfigDirectory() + File.separatorChar + propertyFileName;
+    	File file = new File(path);
+    	if (!file.exists()) {
+    		throw logAndThrow("Cannot find config file " + path);
+    	}
+    	return file;
 	}
     
     private ConfigurationException logAndThrow(String message) {

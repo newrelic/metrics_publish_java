@@ -1,5 +1,6 @@
 package com.newrelic.metrics.publish.binding;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,6 +26,8 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 
+import com.newrelic.metrics.publish.configuration.SDKConfiguration;
+
 /**
  * Provisional API which is subject to change.
  * The context for a {@link Request} that manages {@link AgentData} and {@link ComponentData}.
@@ -32,7 +35,7 @@ import javax.net.ssl.SSLSession;
 public class Context {
 
     private static final String SERVICE_URI = "https://platform-api.newrelic.com/platform/v1/metrics";
-    private static final String LOG_CONFIG_FILE = "config/logging.properties";
+    private static final String LOG_CONFIG_FILE = "logging.properties";
     private static final String LOGGER_NAME = "com.newrelic.metrics.publish";
 
     private static final long AGGREGATION_LIMIT = TimeUnit.MINUTES.toMillis(20);
@@ -83,7 +86,8 @@ public class Context {
     private static void initLogger() {
         InputStream inputStream = null;
         try {
-            inputStream = new FileInputStream(LOG_CONFIG_FILE);
+        	String path = SDKConfiguration.getConfigDirectory() + File.separatorChar + LOG_CONFIG_FILE;
+            inputStream = new FileInputStream(path);
             LogManager.getLogManager().readConfiguration(inputStream);
         } catch (SecurityException e) {
             System.err.println("WARNING: Logging is not currently configured. Please add a config/logging.properties file to enable additional logging.");

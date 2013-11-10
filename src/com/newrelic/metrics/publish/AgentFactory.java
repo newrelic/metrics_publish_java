@@ -13,6 +13,7 @@ import org.json.simple.parser.ParseException;
 
 import com.newrelic.metrics.publish.binding.Context;
 import com.newrelic.metrics.publish.configuration.ConfigurationException;
+import com.newrelic.metrics.publish.configuration.SDKConfiguration;
 
 /**
  * A Factory for creating configured {@link Agent}s.
@@ -24,9 +25,6 @@ import com.newrelic.metrics.publish.configuration.ConfigurationException;
 public abstract class AgentFactory {
 	private final String agentConfigurationFileName;
 	private boolean configRequired = true;
-	
-//	TODO system property for config path
-	private static final String CONFIG_PATH = "config";
 	
 	/**
      * Constructs an {@code AgentFactory} with an agent configuration file.
@@ -119,12 +117,12 @@ public abstract class AgentFactory {
 	}
 	
     private File getConfigurationFile(String configFileName) throws ConfigurationException {
-    	String path = CONFIG_PATH + File.separatorChar + configFileName;
-        File file = new File(path);
-        if (!file.exists()) {
-        	throw logAndThrow("Cannot find config file " + path);
-        }
-        return file;
+    	String path = SDKConfiguration.getConfigDirectory() + File.separatorChar + configFileName;
+    	File file = new File(path);
+    	if (!file.exists()) {
+    		throw logAndThrow("Cannot find config file " + path);
+    	}
+    	return file;    
 	}
     
     private ConfigurationException logAndThrow(String message) {
