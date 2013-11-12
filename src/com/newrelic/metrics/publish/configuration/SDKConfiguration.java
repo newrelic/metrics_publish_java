@@ -105,8 +105,11 @@ public class SDKConfiguration {
 	    return sslHostVerification;
 	}
 	
+	/**
+	 * Use the 'newrelic.platform.config.dir' jvm option to set the configuration directory
+	 */
 	public static String getConfigDirectory() {
-		String path = System.getProperty("com.newrelic.platform.config.dir");
+		String path = System.getProperty("newrelic.platform.config.dir");
 		if (path == null) {
 			path = configPath;
 		}
