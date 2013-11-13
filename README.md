@@ -14,6 +14,10 @@ getting started [documentation](http://newrelic.com/docs/platform/plugin-develop
 
 Add the New Relic Java SDK to your plugin's classpath to start developing.
 
+## System Properties ##
+
+* newrelic.platform.config.dir - Allows you to specify where your configuration files are located. (Does not currently support '~' as a home alias)
+
 ## Support ##
 
 Reach out to us at
