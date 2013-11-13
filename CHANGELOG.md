@@ -1,5 +1,11 @@
 ## New Relic Platform Java SDK Change Log ##
 
+### v1.2.2 - Unreleased ###
+
+**Improvements**
+
+* Added the ability to specify where your configuration directory exists.
+
 ### v1.2.1 - November 4 ###
 
 **Bug Fixes**
