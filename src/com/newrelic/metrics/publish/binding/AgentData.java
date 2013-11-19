@@ -7,7 +7,11 @@ import java.util.HashMap;
  * Represents an agent for a given {@link Request}.
  */
 public class AgentData {
-    public String host = "host";
+    private static final String HOST = "host";
+    private static final String VERSION = "version";
+    private static final String PID = "pid";
+    
+    public String host = HOST;
     public String version;
     public int pid = 0;
 
@@ -17,9 +21,9 @@ public class AgentData {
 
     /* package */ HashMap<String, Object> serialize() {
         HashMap<String, Object> output = new HashMap<String, Object>();
-        output.put("host", host);
-        output.put("version", version);
-        output.put("pid", pid);
+        output.put(HOST, host);
+        output.put(VERSION, version);
+        output.put(PID, pid);
         return output;
     }
 

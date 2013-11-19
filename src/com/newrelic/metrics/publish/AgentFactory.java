@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -112,7 +113,7 @@ public abstract class AgentFactory {
 
 	private void createAndRegister(Runner runner, Map<String, Object> map) throws ConfigurationException {
     	Agent agent = createConfiguredAgent(map);
-    	Context.getLogger().fine("Created agent: " + agent);
+    	if (Context.getLogger().isLoggable(Level.FINE)) Context.getLogger().fine("Created agent: " + agent);
     	runner.register(agent);
 	}
 	
@@ -126,7 +127,7 @@ public abstract class AgentFactory {
 	}
     
     private ConfigurationException logAndThrow(String message) {
-        Context.getLogger().severe(message);
+        if (Context.getLogger().isLoggable(Level.SEVERE)) Context.getLogger().severe(message);
         return new ConfigurationException(message);
     }    
 }

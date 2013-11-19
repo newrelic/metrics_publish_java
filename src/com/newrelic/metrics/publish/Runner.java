@@ -117,7 +117,7 @@ public class Runner {
         Context.getLogger().fine("Setting up agents to be run");
         createAgents();
         if(config.internalGetServiceURI() != null) {
-            Context.getLogger().info("Using host: " + config.internalGetServiceURI());
+            if (Context.getLogger().isLoggable(Level.INFO)) Context.getLogger().info("Using host: " + config.internalGetServiceURI());
         }
 
         context = new Context();
@@ -147,16 +147,16 @@ public class Runner {
         @Override
         public void run() {
             try {
-                Context.getLogger().fine("Harvest and report data");
+                if (Context.getLogger().isLoggable(Level.FINE)) Context.getLogger().fine("Harvest and report data");
 
                 Request request = context.createRequest();
 
                 for (Iterator<Agent> iterator = componentAgents.iterator(); iterator.hasNext();) {
                     Agent agent = iterator.next();
                     agent.getCollector().setRequest(request);
-                    Context.getLogger().fine("Beginning poll cycle for agent: '" + agent.getComponentHumanLabel() + "'");
+                    if (Context.getLogger().isLoggable(Level.FINE)) Context.getLogger().fine("Beginning poll cycle for agent: '" + agent.getComponentHumanLabel() + "'");
                     agent.pollCycle();
-                    Context.getLogger().fine("Ending poll cycle for agent: '" + agent.getComponentHumanLabel() + "'");
+                    if (Context.getLogger().isLoggable(Level.FINE)) Context.getLogger().fine("Ending poll cycle for agent: '" + agent.getComponentHumanLabel() + "'");
                 }
 
                 request.deliver();

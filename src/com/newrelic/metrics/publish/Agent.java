@@ -1,5 +1,7 @@
 package com.newrelic.metrics.publish;
 
+import java.util.logging.Level;
+
 import com.newrelic.metrics.publish.binding.Context;
 import com.newrelic.metrics.publish.internal.DataCollector;
 
@@ -51,7 +53,7 @@ public abstract class Agent {
      * Subclasses may override but must call {@code super}.
      */
     public void setupMetrics() {
-        Context.getLogger().fine("setupMetrics");
+        if (Context.getLogger().isLoggable(Level.FINE)) Context.getLogger().fine("setupMetrics");
     }
 
     /**
@@ -111,7 +113,7 @@ public abstract class Agent {
      */
     public void reportMetric(String metricName, String units, Number value) {
         if (value != null) {
-            Context.getLogger().fine("Reporting metric: " + metricName);
+            if (Context.getLogger().isLoggable(Level.FINE)) Context.getLogger().fine("Reporting metric: " + metricName);
             collector.addData(metricName, units, value);
         }
     }
@@ -130,7 +132,7 @@ public abstract class Agent {
      */
     public void reportMetric(String metricName, String units, int count, Number value, Number minValue, Number maxValue, Number sumOfSquares) {
         if (value != null && minValue != null && maxValue != null && sumOfSquares != null) {
-            Context.getLogger().fine("Reporting metric: " + metricName);
+            if (Context.getLogger().isLoggable(Level.FINE)) Context.getLogger().fine("Reporting metric: " + metricName);
             collector.addData(metricName, units, count, value, minValue, maxValue, sumOfSquares);
         }
     }

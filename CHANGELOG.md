@@ -5,6 +5,9 @@
 **Improvements**
 
 * Added the ability to specify where your configuration directory exists.
+* Several performance improvements:
+  * Improved logging performance
+  * String memory allocation
 
 ### v1.2.1 - November 4 ###
 

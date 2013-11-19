@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.Level;
 
 import com.newrelic.metrics.publish.binding.Context;
 
@@ -15,12 +16,14 @@ import com.newrelic.metrics.publish.binding.Context;
  */
 public class SDKConfiguration {
 
+    private static final String CONFIG_PROPERTY = "newrelic.platform.config.dir";
 	private static final String DEFAULT_LICENSE_KEY = "YOUR_LICENSE_KEY_HERE";
+	private static final String propertyFileName = "newrelic.properties";
+    private static final String configPath = "config";
+	
     private String licenseKey;
     private String serviceURI;
     private boolean sslHostVerification = true;
-	private static final String propertyFileName = "newrelic.properties";
-	private static final String configPath = "config";
 	
 	/**
      * Constructs a {@code SDKConfiguration}
@@ -56,12 +59,12 @@ public class SDKConfiguration {
         //host is optional and for debugging
         if(props.containsKey("host")) {
         	serviceURI = props.getProperty("host");
-        	Context.getLogger().info("Metric service URI: " + serviceURI);
+        	if (Context.getLogger().isLoggable(Level.INFO)) Context.getLogger().info("Metric service URI: " + serviceURI);
         }
         
         if (props.containsKey("sslHostVerification")) {
             sslHostVerification = Boolean.parseBoolean(props.getProperty("sslHostVerification"));
-            Context.getLogger().fine("Using SSL host verification: " + sslHostVerification);
+            if (Context.getLogger().isLoggable(Level.FINE)) Context.getLogger().fine("Using SSL host verification: " + sslHostVerification);
         }
     }
 
@@ -109,11 +112,10 @@ public class SDKConfiguration {
 	 * Use the 'newrelic.platform.config.dir' jvm option to set the configuration directory
 	 */
 	public static String getConfigDirectory() {
-		String path = System.getProperty("newrelic.platform.config.dir");
+		String path = System.getProperty(CONFIG_PROPERTY);
 		if (path == null) {
 			path = configPath;
 		}
-		
 		return path;
 	}
     
@@ -127,7 +129,7 @@ public class SDKConfiguration {
 	}
     
     private ConfigurationException logAndThrow(String message) {
-    	Context.getLogger().severe(message);
+        if (Context.getLogger().isLoggable(Level.SEVERE)) Context.getLogger().severe(message);
         return new ConfigurationException(message);
     }
 }

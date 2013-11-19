@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -91,10 +90,9 @@ public class Request {
     public void deliver() {
         // do not send an empty request
         if (metrics.isEmpty()) {
-            Context.getLogger().fine("No metrics were reported for this poll cycle");
+            if (Context.getLogger().isLoggable(Level.FINE)) Context.getLogger().fine("No metrics were reported for this poll cycle");
         } else {
             HttpURLConnection connection = null;
-            Logger logger = Context.getLogger();
             
             try {
                 connection = context.createUrlConnectionForOutput();
@@ -104,7 +102,7 @@ public class Request {
                     Map<String, Object> data = serialize();
                     
                     String json = JSONObject.toJSONString(data);
-                    logger.fine("Sending JSON: " + json);
+                    if (Context.getLogger().isLoggable(Level.FINE)) Context.getLogger().fine("Sending JSON: " + json);
                     
                     out.write(json);
                 } finally {
@@ -115,13 +113,13 @@ public class Request {
                 processResponse(connection);
             }
             catch (Exception ex) {
-                logger.severe("An error occurred communicating with the New Relic service - " + ex);
+                Context.getLogger().severe("An error occurred communicating with the New Relic service - " + ex);
     
                 if (connection != null) {
                     try {
-                       logger.info("Response: " + connection.getResponseCode() + " : " + connection.getResponseMessage() );
+                        Context.getLogger().info("Response: " + connection.getResponseCode() + " : " + connection.getResponseMessage() );
                      } catch (IOException e) {
-                        logger.log(Level.FINE, ex.getMessage(), ex);
+                         Context.getLogger().log(Level.FINE, ex.getMessage(), ex);
                     }
                 }
             } finally {
@@ -150,14 +148,14 @@ public class Request {
   
         // do not log 503 responses
         if (isCollectorUnavailable(responseCode)) {
-        	Context.getLogger().fine("Collector temporarily unavailable...continuing");
+            if (Context.getLogger().isLoggable(Level.FINE)) Context.getLogger().fine("Collector temporarily unavailable...continuing");
         }
         else {
         	// read server response
         	String responseBody = getServerResponse(responseCode, connection);
         	
         	if (isResponseEmpty(responseBody)) {
-        		Context.getLogger().info("Failed server response: no response");
+        	    if (Context.getLogger().isLoggable(Level.INFO)) Context.getLogger().info("Failed server response: no response");
         	}
         	else if (isRemotelyDisabled(responseCode, responseBody)) {
         		// Remote disabling by New Relic -- exit
@@ -166,7 +164,7 @@ public class Request {
         		System.exit(EXIT_CODE);
             }
         	else if (isResponseOk(responseCode, responseBody)) {
-        		Context.getLogger().fine("Server response: " + responseCode + ", " + responseBody);
+        	    if (Context.getLogger().isLoggable(Level.FINE)) Context.getLogger().fine("Server response: " + responseCode + ", " + responseBody);
         		delivered = true;
         		Date deliveredAt = new Date();
         		context.setAggregationStartedAt(deliveredAt);
@@ -175,7 +173,7 @@ public class Request {
             }
             else {
         		// all other response codes will fail
-        		Context.getLogger().severe("Failed server response: " + responseCode + ", " + responseBody);
+                if (Context.getLogger().isLoggable(Level.SEVERE)) Context.getLogger().severe("Failed server response: " + responseCode + ", " + responseBody);
         	}
         }
     }
@@ -298,7 +296,7 @@ public class Request {
     }
 
     private MetricData addMetric(ComponentData component, MetricData metric) {
-        Context.getLogger().fine(component + " : " + metric);
+        if (Context.getLogger().isLoggable(Level.FINE)) Context.getLogger().fine(component + " : " + metric);
         List<MetricData> metrics = getMetrics(component);
         if (metrics.contains(metric)) {
             aggregate(metric, metrics);

@@ -10,6 +10,11 @@ import java.util.List;
  */
 public class ComponentData {
 
+    private static final String NAME = "name";
+    private static final String GUID = "guid";
+    private static final String DURATION = "duration";
+    private static final String METRICS = "metrics";
+    
     public String name;
     public String guid;
     private Date lastSuccessfulReportedAt;
@@ -24,13 +29,13 @@ public class ComponentData {
         List<MetricData> metrics = request.getMetrics(this);
 
         if(!metrics.isEmpty()) {
-            output.put("name", name);
-            output.put("guid", guid);
+            output.put(NAME, name);
+            output.put(GUID, guid);
 
-            output.put("duration", calculateDuration());
+            output.put(DURATION, calculateDuration());
 
             HashMap<String, Object> metricsOutput = new HashMap<String, Object>();
-            output.put("metrics", metricsOutput);
+            output.put(METRICS, metricsOutput);
 
             for (MetricData metric : metrics) {
                 metric.serialize(metricsOutput);
@@ -65,6 +70,6 @@ public class ComponentData {
     }
 
     public String toString() {
-        return "ComponentData(" + name + ":" + guid + ")";
+        return new StringBuilder().append("ComponentData").append("(").append(name).append(":").append(guid).append(")").toString();
     }
 }
