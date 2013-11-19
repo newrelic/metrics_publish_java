@@ -1,5 +1,7 @@
 package com.newrelic.metrics.publish;
 
+import java.util.logging.Level;
+
 import com.newrelic.metrics.publish.binding.Context;
 import com.newrelic.metrics.publish.internal.DataCollector;
 
@@ -13,6 +15,8 @@ import com.newrelic.metrics.publish.internal.DataCollector;
  */
 public abstract class Agent {
 
+    private static final String REPORTING_METRIC_MSG = "Reporting metric: ";
+    
     private final String GUID;
     private final String version;
     //TODO in Ruby, this is called a "agent_human_label" but they're really labels for extensions and components
@@ -51,7 +55,7 @@ public abstract class Agent {
      * Subclasses may override but must call {@code super}.
      */
     public void setupMetrics() {
-        Context.getLogger().fine("setupMetrics");
+        Context.log(Level.FINE, "setupMetrics");
     }
 
     /**
@@ -111,7 +115,7 @@ public abstract class Agent {
      */
     public void reportMetric(String metricName, String units, Number value) {
         if (value != null) {
-            Context.getLogger().fine("Reporting metric: " + metricName);
+            Context.log(Level.FINE, REPORTING_METRIC_MSG, metricName);
             collector.addData(metricName, units, value);
         }
     }
@@ -130,7 +134,7 @@ public abstract class Agent {
      */
     public void reportMetric(String metricName, String units, int count, Number value, Number minValue, Number maxValue, Number sumOfSquares) {
         if (value != null && minValue != null && maxValue != null && sumOfSquares != null) {
-            Context.getLogger().fine("Reporting metric: " + metricName);
+            Context.log(Level.FINE, REPORTING_METRIC_MSG, metricName);
             collector.addData(metricName, units, count, value, minValue, maxValue, sumOfSquares);
         }
     }

@@ -12,6 +12,9 @@ import com.newrelic.metrics.publish.binding.Request;
 public class DataCollector {
 
     /* package */ static final String METRIC_PREFIX = "Component/";
+    private static final String LEFT_BRACKET = "[";
+    private static final String RIGHT_BRACKET = "]";
+    private static final int METRIC_STRING_BASE_LENGTH = 12; // METRIC_PREFIX length plus BRACKET lengths
 
     private ComponentData componentData;
     private Request request;
@@ -94,7 +97,14 @@ public class DataCollector {
         request.addMetric(componentData, getMetricFullName(metricName, units), count, value, minValue, maxValue, sumOfSquares);
     }
 
-    private String getMetricFullName(String metricName, String units) {
-        return METRIC_PREFIX + metricName + "[" + units + "]";
+    /* package */ String getMetricFullName(String metricName, String units) {
+        // allocating exact size to reduce memory in array resizing in StringBuilder
+        return new StringBuilder(METRIC_STRING_BASE_LENGTH + metricName.length() + units.length())
+            .append(METRIC_PREFIX)
+            .append(metricName)
+            .append(LEFT_BRACKET)
+            .append(units)
+            .append(RIGHT_BRACKET)
+            .toString();
     }
 }

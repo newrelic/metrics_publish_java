@@ -37,16 +37,25 @@ public class Context {
     private static final String SERVICE_URI = "https://platform-api.newrelic.com/platform/v1/metrics";
     private static final String LOG_CONFIG_FILE = "logging.properties";
     private static final String LOGGER_NAME = "com.newrelic.metrics.publish";
+    
+    private static final String POST = "POST";
+    private static final String X_LICENSE_KEY = "X-License-Key";
+    private static final String CONTENT_TYPE = "Content-Type";
+    private static final String APPLICATION_JSON = "application/json";
+    private static final String ACCEPT = "Accept";
+    private static final String AGENT = "agent";
+    private static final String COMPONENTS = "components";
 
     private static final long AGGREGATION_LIMIT = TimeUnit.MINUTES.toMillis(20);
     private static final int CONNECTION_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(20);
-
+    
+    private static Logger LOGGER;
+    
     public String licenseKey;
     public AgentData agentData;
 
     private String serviceURI = SERVICE_URI;
     private boolean sslHostVerification = true;
-    private static Logger LOGGER;
     private LinkedList<ComponentData> components;
 
     private Request lastRequest;
@@ -64,7 +73,7 @@ public class Context {
      * @return Logger
      */
     public static Logger getLogger() {
-        if(LOGGER == null) {
+        if (LOGGER == null) {
             initLogger();
         }
         return LOGGER;
@@ -77,6 +86,25 @@ public class Context {
      */
     public static void setLogger(Logger logger) {
         LOGGER = logger;
+    }
+    
+    /**
+     * Log a variable length array of objects at a provided {@link java.util.logging.Level}. 
+     * This will only concatenate the log messages if the log level is currently loggable.
+     * <p> Ex. {@code Context.log(Level.FINE, "Name: ", name, ", Value: ", value);}
+     * <p> Developers should be aware that the provided logging framework may change in the future as the SDK changes.
+     * <p> See {@link #getLogger()} and {@link Logger#isLoggable(Level)} for additional information.
+     * @param level
+     * @param messages
+     */
+    public static void log(Level level, Object... messages) {
+        if (getLogger().isLoggable(level)) {
+            StringBuilder builder = new StringBuilder();
+            for (Object message : messages) {
+                builder.append(message);
+            }
+            getLogger().log(level, builder.toString());
+        }
     }
 
     /**
@@ -108,9 +136,22 @@ public class Context {
         for(Handler handler : logger.getHandlers()) {
             handler.setFormatter(new LogFormatter());
         }
-        // setting the logger's level to ALL so that it can be overridden by the ConsoleHandler and FileHandler log levels.
-        logger.setLevel(Level.ALL);
+        // setting the logger's level to the highest handler level so that it
+        // can be overridden by the ConsoleHandler and FileHandler log levels.
+        Level level = getInitialLogLevel(logger.getHandlers());
+        logger.setLevel(level);
         setLogger(logger);
+    }
+    
+    /* package */ static Level getInitialLogLevel(Handler[] handlers) {
+        Level level = Level.INFO;
+        for(Handler handler : handlers) {
+            handler.setFormatter(new LogFormatter());
+            if (handler.getLevel().intValue() < level.intValue()) {
+                level = handler.getLevel();
+            }
+        }
+        return level;
     }
 
     /**
@@ -216,13 +257,13 @@ public class Context {
      */
     /* package */ HttpURLConnection createUrlConnectionForOutput() throws IOException {
         URL serviceUrl = new URL(serviceURI);
-        LOGGER.fine("Metric service url: " + serviceUrl);
+        log(Level.FINE, "Metric service url: ", serviceUrl);
 
         HttpURLConnection connection = (HttpURLConnection) serviceUrl.openConnection();
-        connection.setRequestMethod("POST");
-        connection.addRequestProperty("X-License-Key", licenseKey);
-        connection.addRequestProperty("Content-Type", "application/json");
-        connection.addRequestProperty("Accept", "application/json");
+        connection.setRequestMethod(POST);
+        connection.addRequestProperty(X_LICENSE_KEY, licenseKey);
+        connection.addRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
+        connection.addRequestProperty(ACCEPT, APPLICATION_JSON);
         connection.setConnectTimeout(CONNECTION_TIMEOUT);
         connection.setReadTimeout(CONNECTION_TIMEOUT);
 
@@ -244,10 +285,10 @@ public class Context {
 
     /* package */ Map<String, Object> serialize(Request request) {
         Map<String, Object> output = new HashMap<String, Object>();
-        output.put("agent", agentData.serialize());
+        output.put(AGENT, agentData.serialize());
 
         LinkedList<HashMap<String, Object>> componentsOutput = new LinkedList<HashMap<String, Object>>();
-        output.put("components", componentsOutput);
+        output.put(COMPONENTS, componentsOutput);
 
         for (ComponentData component : components) {
             HashMap<String, Object> map = component.serialize(request);

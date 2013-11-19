@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -91,10 +90,9 @@ public class Request {
     public void deliver() {
         // do not send an empty request
         if (metrics.isEmpty()) {
-            Context.getLogger().fine("No metrics were reported for this poll cycle");
+            Context.log(Level.FINE, "No metrics were reported for this poll cycle");
         } else {
             HttpURLConnection connection = null;
-            Logger logger = Context.getLogger();
             
             try {
                 connection = context.createUrlConnectionForOutput();
@@ -104,7 +102,7 @@ public class Request {
                     Map<String, Object> data = serialize();
                     
                     String json = JSONObject.toJSONString(data);
-                    logger.fine("Sending JSON: " + json);
+                    Context.log(Level.FINE, "Sending JSON: ", json);
                     
                     out.write(json);
                 } finally {
@@ -115,13 +113,13 @@ public class Request {
                 processResponse(connection);
             }
             catch (Exception ex) {
-                logger.severe("An error occurred communicating with the New Relic service - " + ex);
+                Context.log(Level.SEVERE, "An error occurred communicating with the New Relic service - ", ex);
     
                 if (connection != null) {
                     try {
-                       logger.info("Response: " + connection.getResponseCode() + " : " + connection.getResponseMessage() );
+                        Context.log(Level.INFO, "Response: ", connection.getResponseCode(), " : ", connection.getResponseMessage());
                      } catch (IOException e) {
-                        logger.log(Level.FINE, ex.getMessage(), ex);
+                         Context.log(Level.FINE, ex.getMessage(), ex);
                     }
                 }
             } finally {
@@ -150,23 +148,23 @@ public class Request {
   
         // do not log 503 responses
         if (isCollectorUnavailable(responseCode)) {
-        	Context.getLogger().fine("Collector temporarily unavailable...continuing");
+            Context.log(Level.FINE, "Collector temporarily unavailable...continuing");
         }
         else {
         	// read server response
         	String responseBody = getServerResponse(responseCode, connection);
         	
         	if (isResponseEmpty(responseBody)) {
-        		Context.getLogger().info("Failed server response: no response");
+        	    Context.log(Level.INFO, "Failed server response: no response");
         	}
         	else if (isRemotelyDisabled(responseCode, responseBody)) {
         		// Remote disabling by New Relic -- exit
-        	    Context.getLogger().severe("Agent has been disabled remotely by New Relic");
+        	    Context.log(Level.SEVERE, "Agent has been disabled remotely by New Relic");
         		System.err.println("SEVERE: Agent has been disabled remotely by New Relic");
         		System.exit(EXIT_CODE);
             }
         	else if (isResponseOk(responseCode, responseBody)) {
-        		Context.getLogger().fine("Server response: " + responseCode + ", " + responseBody);
+        	    Context.log(Level.FINE, "Server response: ", responseCode, ", ", responseBody);
         		delivered = true;
         		Date deliveredAt = new Date();
         		context.setAggregationStartedAt(deliveredAt);
@@ -175,7 +173,7 @@ public class Request {
             }
             else {
         		// all other response codes will fail
-        		Context.getLogger().severe("Failed server response: " + responseCode + ", " + responseBody);
+                Context.log(Level.SEVERE, "Failed server response: ", responseCode, ", ", responseBody);
         	}
         }
     }
@@ -298,7 +296,7 @@ public class Request {
     }
 
     private MetricData addMetric(ComponentData component, MetricData metric) {
-        Context.getLogger().fine(component + " : " + metric);
+        Context.log(Level.FINE, component, " : ", metric);
         List<MetricData> metrics = getMetrics(component);
         if (metrics.contains(metric)) {
             aggregate(metric, metrics);
