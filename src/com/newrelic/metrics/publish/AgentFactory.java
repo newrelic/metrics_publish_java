@@ -113,7 +113,7 @@ public abstract class AgentFactory {
 
 	private void createAndRegister(Runner runner, Map<String, Object> map) throws ConfigurationException {
     	Agent agent = createConfiguredAgent(map);
-    	if (Context.getLogger().isLoggable(Level.FINE)) Context.getLogger().fine("Created agent: " + agent);
+    	Context.log(Level.FINE, "Created agent: ", agent);
     	runner.register(agent);
 	}
 	
@@ -127,7 +127,7 @@ public abstract class AgentFactory {
 	}
     
     private ConfigurationException logAndThrow(String message) {
-        if (Context.getLogger().isLoggable(Level.SEVERE)) Context.getLogger().severe(message);
+        Context.log(Level.SEVERE, message);
         return new ConfigurationException(message);
     }    
 }

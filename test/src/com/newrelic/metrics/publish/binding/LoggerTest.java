@@ -83,4 +83,43 @@ public class LoggerTest {
         
         assertTrue(Context.getLogger().isLoggable(Level.FINE));
     }
+    
+    @Test
+    public void testLog() {
+        MockLogger logger = new MockLogger();
+        Context.setLogger(logger);
+        
+        String name = "Logger";
+        int value = 5;
+        
+        Context.log(Level.INFO, "Name: ", name, ", Value: ", value);
+        assertEquals(Level.INFO, logger.lastLevel);
+        assertEquals("Name: Logger, Value: 5", logger.lastMessage);
+    }
+    
+    private static final class MockLogger extends Logger {
+
+        public Level lastLevel;
+        public String lastMessage;
+        
+        public MockLogger() {
+            this("name", null);
+        }
+        
+        protected MockLogger(String name, String resourceBundleName) {
+            super(name, resourceBundleName);
+        }
+        
+        @Override
+        public boolean isLoggable(Level level) {
+            return true;
+        }
+        
+        @Override
+        public void log(Level level, String message) {
+            this.lastLevel = level;
+            this.lastMessage = message;
+        }
+        
+    }
 }

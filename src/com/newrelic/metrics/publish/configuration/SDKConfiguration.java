@@ -59,12 +59,12 @@ public class SDKConfiguration {
         //host is optional and for debugging
         if(props.containsKey("host")) {
         	serviceURI = props.getProperty("host");
-        	if (Context.getLogger().isLoggable(Level.INFO)) Context.getLogger().info("Metric service URI: " + serviceURI);
+        	Context.log(Level.INFO, "Metric service URI: ", serviceURI);
         }
         
         if (props.containsKey("sslHostVerification")) {
             sslHostVerification = Boolean.parseBoolean(props.getProperty("sslHostVerification"));
-            if (Context.getLogger().isLoggable(Level.FINE)) Context.getLogger().fine("Using SSL host verification: " + sslHostVerification);
+            Context.log(Level.FINE, "Using SSL host verification: ", sslHostVerification);
         }
     }
 
@@ -129,7 +129,7 @@ public class SDKConfiguration {
 	}
     
     private ConfigurationException logAndThrow(String message) {
-        if (Context.getLogger().isLoggable(Level.SEVERE)) Context.getLogger().severe(message);
+        Context.log(Level.SEVERE, message);
         return new ConfigurationException(message);
     }
 }

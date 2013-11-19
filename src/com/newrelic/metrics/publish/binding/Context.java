@@ -87,6 +87,25 @@ public class Context {
     public static void setLogger(Logger logger) {
         LOGGER = logger;
     }
+    
+    /**
+     * Log a variable length array of objects at a provided {@link java.util.logging.Level}. 
+     * This will only concatenate the log messages if the log level is currently loggable.
+     * <p> Ex. {@code Context.log(Level.FINE, "Name: ", name, ", Value: ", value);}
+     * <p> Developers should be aware that the provided logging framework may change in the future as the SDK changes.
+     * <p> See {@link #getLogger()} and {@link Logger#isLoggable(Level)} for additional information.
+     * @param level
+     * @param messages
+     */
+    public static void log(Level level, Object... messages) {
+        if (getLogger().isLoggable(level)) {
+            StringBuilder builder = new StringBuilder();
+            for (Object message : messages) {
+                builder.append(message);
+            }
+            getLogger().log(level, builder.toString());
+        }
+    }
 
     /**
      * Initializes the logger by looking for a 'logging.properties' file.
@@ -238,7 +257,7 @@ public class Context {
      */
     /* package */ HttpURLConnection createUrlConnectionForOutput() throws IOException {
         URL serviceUrl = new URL(serviceURI);
-        if (getLogger().isLoggable(Level.FINE)) getLogger().fine("Metric service url: " + serviceUrl);
+        log(Level.FINE, "Metric service url: ", serviceUrl);
 
         HttpURLConnection connection = (HttpURLConnection) serviceUrl.openConnection();
         connection.setRequestMethod(POST);

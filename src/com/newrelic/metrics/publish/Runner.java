@@ -24,7 +24,7 @@ import com.newrelic.metrics.publish.configuration.SDKConfiguration;
  * in a loop that never returns.
  */
 public class Runner {
-
+    
     private List<Agent> componentAgents;
     private final SDKConfiguration config;
     private int pollInterval = 60;
@@ -117,7 +117,7 @@ public class Runner {
         Context.getLogger().fine("Setting up agents to be run");
         createAgents();
         if(config.internalGetServiceURI() != null) {
-            if (Context.getLogger().isLoggable(Level.INFO)) Context.getLogger().info("Using host: " + config.internalGetServiceURI());
+            Context.log(Level.INFO, "Using host: ", config.internalGetServiceURI());
         }
 
         context = new Context();
@@ -147,16 +147,16 @@ public class Runner {
         @Override
         public void run() {
             try {
-                if (Context.getLogger().isLoggable(Level.FINE)) Context.getLogger().fine("Harvest and report data");
+                Context.log(Level.FINE, "Harvest and report data");
 
                 Request request = context.createRequest();
 
                 for (Iterator<Agent> iterator = componentAgents.iterator(); iterator.hasNext();) {
                     Agent agent = iterator.next();
                     agent.getCollector().setRequest(request);
-                    if (Context.getLogger().isLoggable(Level.FINE)) Context.getLogger().fine("Beginning poll cycle for agent: '" + agent.getComponentHumanLabel() + "'");
+                    Context.log(Level.FINE, "Beginning poll cycle for agent: '", agent.getComponentHumanLabel(), "'");
                     agent.pollCycle();
-                    if (Context.getLogger().isLoggable(Level.FINE)) Context.getLogger().fine("Ending poll cycle for agent: '" + agent.getComponentHumanLabel() + "'");
+                    Context.log(Level.FINE, "Ending poll cycle for agent: '", agent.getComponentHumanLabel(), "'");
                 }
 
                 request.deliver();
