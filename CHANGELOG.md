@@ -1,15 +1,15 @@
 ## New Relic Platform Java SDK Change Log ##
 
-### v1.2.2 - Unreleased ###
+### v1.2.2 - November 25, 2013 ###
 
 **Improvements**
 
 * Added the ability to specify where your configuration directory exists.
 * Several performance improvements:
   * Improved logging performance
-  * String memory allocation
+  * Improved String memory allocation
 
-### v1.2.1 - November 4 ###
+### v1.2.1 - November 4, 2013 ###
 
 **Bug Fixes**
 
