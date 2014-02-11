@@ -234,15 +234,17 @@ public class Request {
     	InputStream input = getResponseStream(responseCode, connection);
     	
     	StringBuilder builder = new StringBuilder();
-    	BufferedReader in = new BufferedReader(new InputStreamReader(input));
-		try {
-			String inputLine;
-			while ((inputLine = in.readLine()) != null) {
-				builder.append(inputLine);
-			}
-		} finally {
-			in.close();
-		}
+    	if (input != null) {
+       	BufferedReader in = new BufferedReader(new InputStreamReader(input));
+   		try {
+   			String inputLine;
+   			while ((inputLine = in.readLine()) != null) {
+   				builder.append(inputLine);
+   			}
+   		} finally {
+   			in.close();
+   		}
+    	}
     	return builder.toString();
     }
     

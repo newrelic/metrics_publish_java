@@ -100,10 +100,15 @@ public class Context {
     public static void log(Level level, Object... messages) {
         if (getLogger().isLoggable(level)) {
             StringBuilder builder = new StringBuilder();
+            Throwable throwable = null;
             for (Object message : messages) {
-                builder.append(message);
+               if (message instanceof Throwable) {
+                  throwable = (Throwable) message;
+               } else {
+                  builder.append(message);
+               }
             }
-            getLogger().log(level, builder.toString());
+            getLogger().log(level, builder.toString(), throwable);
         }
     }
 
