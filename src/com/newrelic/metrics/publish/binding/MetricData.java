@@ -26,7 +26,12 @@ public class MetricData {
 	    this.value = value.floatValue();
 	    this.minValue = minValue.floatValue();
 	    this.maxValue = maxValue.floatValue();
-	    this.sumOfSquares = sumOfSquares.floatValue();
+	    
+	    if (!Float.isInfinite(sumOfSquares.floatValue())) {
+	       this.sumOfSquares = sumOfSquares.floatValue();
+	    } else {
+	       this.sumOfSquares = 0f;
+      }
 	}
 	
 	/* package */ void serialize(HashMap<String, Object> data) {
