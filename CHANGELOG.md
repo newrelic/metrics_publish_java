@@ -1,5 +1,11 @@
 ## New Relic Platform Java SDK Change Log ##
 
+### v1.2.3 - March 21, 2014 ###
+
+**Bug Fixes**
+
+* Fixed a metric value issue where Infinity and NaN values were being improperly handled
+
 ### v1.2.2 - November 25, 2013 ###
 
 **Improvements**
