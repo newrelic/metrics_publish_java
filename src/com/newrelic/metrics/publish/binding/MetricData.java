@@ -27,6 +27,7 @@ public class MetricData {
 	    this.minValue = minValue.floatValue();
 	    this.maxValue = maxValue.floatValue();
 	    this.sumOfSquares = sumOfSquares.floatValue();
+	    convertValues();
 	}
 	
 	/* package */ void serialize(HashMap<String, Object> data) {
@@ -39,6 +40,7 @@ public class MetricData {
         minValue = Math.min(minValue, other.minValue);
         maxValue = Math.max(maxValue, other.maxValue);
         sumOfSquares += other.sumOfSquares;
+        convertValues();
     }
 	
 	public String toString() {
@@ -78,5 +80,29 @@ public class MetricData {
         } else if (!name.equals(other.name))
             return false;
         return true;
+    }
+    
+    private void convertValues() {
+        convertInfiniteValues();
+        convertNaNValues();
+    }
+    
+    private void convertInfiniteValues() {
+        if (Float.POSITIVE_INFINITY == value) { value = Float.MAX_VALUE; }
+        if (Float.POSITIVE_INFINITY == maxValue) { maxValue = Float.MAX_VALUE; }
+        if (Float.POSITIVE_INFINITY == minValue) { minValue = Float.MAX_VALUE; }
+        if (Float.POSITIVE_INFINITY == sumOfSquares) { sumOfSquares = Float.MAX_VALUE; }
+        
+        if (Float.NEGATIVE_INFINITY == value) { value = Float.MIN_VALUE; }
+        if (Float.NEGATIVE_INFINITY == maxValue) { maxValue = Float.MIN_VALUE; }
+        if (Float.NEGATIVE_INFINITY == minValue) { minValue = Float.MIN_VALUE; }
+        if (Float.NEGATIVE_INFINITY == sumOfSquares) { sumOfSquares = Float.MIN_VALUE; }
+    }
+    
+    private void convertNaNValues() {
+        if (Float.isNaN(value)) { value = 0.0f; }
+        if (Float.isNaN(maxValue)) { maxValue = 0.0f; }
+        if (Float.isNaN(minValue)) { minValue = 0.0f; }
+        if (Float.isNaN(sumOfSquares)) { sumOfSquares = 0.0f; }
     }
 }

@@ -73,4 +73,35 @@ public class MetricDataTest {
         
         assertFalse(metric.equals(other));
     }
+    
+    @Test
+    public void testConvertPositiveInfiniteValues() {
+        MetricData positiveInfiniteMetric = new MetricData("test metric", Float.POSITIVE_INFINITY);
+        
+        assertEquals(Float.MAX_VALUE, positiveInfiniteMetric.value, 0.0001);
+        assertEquals(Float.MAX_VALUE, positiveInfiniteMetric.maxValue, 0.0001);
+        assertEquals(Float.MAX_VALUE, positiveInfiniteMetric.minValue, 0.0001);
+        assertEquals(Float.MAX_VALUE, positiveInfiniteMetric.sumOfSquares, 0.0001);
+    }
+    
+    @Test
+    public void testConvertNegativeInfiniteValues() {
+        MetricData negativeInfiniteMetric = new MetricData("test metric", Float.NEGATIVE_INFINITY);
+        
+        assertEquals(Float.MIN_VALUE, negativeInfiniteMetric.value, 0.0001);
+        assertEquals(Float.MIN_VALUE, negativeInfiniteMetric.maxValue, 0.0001);
+        assertEquals(Float.MIN_VALUE, negativeInfiniteMetric.minValue, 0.0001);
+        // NEGATIVE_INFINITY * NEGATIVE_INFINITY = POSITIVE_INFINITY
+        assertEquals(Float.MAX_VALUE, negativeInfiniteMetric.sumOfSquares, 0.0001);
+    }
+    
+    @Test
+    public void testConvertNaNValues() {
+        MetricData nanMetric = new MetricData("test metric", Float.NaN);
+        
+        assertEquals(0.0f, nanMetric.value, 0.0001);
+        assertEquals(0.0f, nanMetric.maxValue, 0.0001);
+        assertEquals(0.0f, nanMetric.minValue, 0.0001);
+        assertEquals(0.0f, nanMetric.sumOfSquares, 0.0001);
+    }
 }
