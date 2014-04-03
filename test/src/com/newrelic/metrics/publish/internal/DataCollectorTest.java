@@ -8,7 +8,7 @@ public class DataCollectorTest {
 
     @Test
     public void testGetMetricFullName() {
-        DataCollector collector = new DataCollector(null);
+        DataCollector collector = new DataCollector();
         
         assertEquals("Component/Queries[queries/second]", collector.getMetricFullName("Queries", "queries/second"));
         assertEquals("Component/DB/Queries[queries/second]", collector.getMetricFullName("DB/Queries", "queries/second"));

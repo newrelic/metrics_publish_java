@@ -5,13 +5,19 @@
     <property name="libdir" value="lib"/>
     <property name="distdir" location="dist"/>
 
-    <property name="version" value="1.2.3"/>
+    <property name="version" value="2.0.0"/>
     <property name="jarfile" value="${distdir}/metrics_publish-${version}.jar"/>
 
     <property name="json-simple.jar" value="${libdir}/json-simple-1.1.1.jar"/>
+    <property name="logback-classic.jar" value="${libdir}/logback-classic-1.1.1.jar"/>
+    <property name="logback-core.jar" value="${libdir}/logback-core-1.1.1.jar"/>
+    <property name="slf4j-api.jar" value="${libdir}/slf4j-api-1.7.6.jar"/>
 
     <path id="classpath">
         <pathelement location="${json-simple.jar}"/>
+        <pathelement location="${logback-classic.jar}"/>
+        <pathelement location="${logback-core.jar}"/>
+        <pathelement location="${slf4j-api.jar}"/>
     </path>
 
     <target name="init" depends="clean">
@@ -22,7 +28,7 @@
     <target name="compile" depends="init">
         <!--  Compile the java code  -->
         <echo>Building project...</echo>
-        <javac srcdir="${srcdir}" destdir="${builddir}">
+        <javac srcdir="${srcdir}" destdir="${builddir}" debug="true">
             <classpath refid="classpath"/>
         </javac>
         <echo>Done.</echo>
@@ -48,6 +54,9 @@
             </manifest>
             <fileset dir="${builddir}"/>
             <zipfileset src="${json-simple.jar}"/>
+            <zipfileset src="${logback-classic.jar}"/>
+            <zipfileset src="${logback-core.jar}"/>
+            <zipfileset src="${slf4j-api.jar}"/>
         </jar>
     </target>
 </project>

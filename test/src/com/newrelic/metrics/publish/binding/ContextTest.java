@@ -13,6 +13,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
+import com.newrelic.metrics.publish.configuration.Config;
+
 public class ContextTest {
 
     @Test
@@ -141,5 +143,15 @@ public class ContextTest {
         Request newRequest = context.createRequest();
         
         assertNotSame(request, newRequest);
+    }
+    
+    @Test
+    public void testGetUserAgent() {
+    	Context context = BindingFactory.createContext();
+    	String userAgent = context.getUserAgentString();
+    	String sdkVersion = Config.getSdkVersion();
+    	
+    	assertNotNull(userAgent);
+    	assertTrue(userAgent.contains(sdkVersion));
     }
 }

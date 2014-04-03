@@ -1,5 +1,27 @@
 ## New Relic Platform Java SDK Change Log ##
 
+### v2.0.0 - Unreleased ###
+
+**Improvements**
+
+* New `Config` class for accessing configuration properties for a plugin
+* New optional `plugin.json` file for configuring `agents` and any static configuration a plugin may need
+* New `Logger` class for standard logging
+
+**Changes**
+
+* Changes for new `plugin installer` CLI tool
+* Consistent property file structure with `json` files
+* Moved from `newrelic.properties` configuration file to `newrelic.json` file
+  * `host` property changed to `endpoint`
+  * `sslHostVerification` changed to `ssl_host_verification`
+* `AgentFactory#readJSONFile(String)` is now deprecated in favor of using `Config#getValue(String)` and the `plugin.json` file
+* `AgentFactory` constructor is no longer configurable with a JSON configuration file - see new `plugin.json` file in README
+* `Context#getLogger()`, `Context#setLogger()`, and `Context#log()` have been removed in favor of the new `Logger` class
+* The `logging.properties` configuration file has been replaced with simplified configuration in the `newrelic.json` file. See README.md for logging configuration.
+* `Runner` constructor now correctly advertises that it throws a checked `ConfigurationException`
+* `Agent#prepareToRun(Context)` has been removed in favor of `Agent#prepareToRun()`
+
 ### v1.2.3 - March 21, 2014 ###
 
 **Bug Fixes**

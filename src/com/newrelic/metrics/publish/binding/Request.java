@@ -11,10 +11,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+
+import com.newrelic.metrics.publish.util.Logger;
 
 /**
  * Provisional API which is subject to change.
@@ -25,85 +26,86 @@ import org.json.simple.JSONValue;
  *
  */
 public class Request {
-	
+
+    private static final Logger logger = Logger.getLogger(Request.class);
+    
     private static final String EMPTY_STRING = "";
     private static final String STATUS = "status";
     private static final String OK_STATUS = "ok";
     private static final String DISABLE_NEW_RELIC = "DISABLE_NEW_RELIC";
     private static final int EXIT_CODE = 1;
-	
-	private final Context context;
-	private final HashMap<ComponentData, LinkedList<MetricData>> metrics = new HashMap<ComponentData, LinkedList<MetricData>>(); 
-	
-	private boolean delivered = false;
-	
-	/**
-	 * Constructs a {@code Request} with a given {@link Context}.
-	 * <p> See also {@link Context#createRequest()}
-	 * @param context the {@link Context} for the {@code Request}
-	 */
-	public Request(Context context) {
-	    this.context = context;
-	}
 
-	/**
-	 * Add metric to the {@code Request} for a given component.
-	 * The {@link Number} value is converted to a {@code float}.
-	 * The count is assumed to be 1, while minValue and maxValue are set to value.
-	 * Sum of squares is calculated as the value squared.
-	 * @param component the {@code ComponentData} the metric should be added to
-	 * @param name the name of the metric
-	 * @param value the Number value for the metric
-	 * @return MetricData the newly added metric
-	 */
-	public MetricData addMetric(ComponentData component, String name, Number value) {
-	    MetricData metricData = null;
-	    if (value != null) {
-	       metricData = addMetric(component, new MetricData(name, value));
-	    }
-		return metricData;
-	}
-	
-	/**
-	 * Add metric to the {@code Request} for a given component.
-	 * All {@link Number} values are converted to {@code floats}.
-	 * @param component the {@code ComponentData} the metric should be added to
-	 * @param name the name of the metric
-	 * @param count the number of things being measured
-	 * @param value the Number value for the metric
-	 * @param minValue the minimum Number value for the metric
-	 * @param maxValue the maximum Number value for the metric
-	 * @param sumOfSquares the sum of squared values for the metric
-	 * @return MetricData the newly added metric
-	 */
-	public MetricData addMetric(ComponentData component, String name, int count, Number value, Number minValue, Number maxValue, Number sumOfSquares) {
-	    MetricData metricData = null;
-	    if (value != null && minValue != null && maxValue != null && sumOfSquares != null) {
-	        metricData = addMetric(component, new MetricData(name, count, value, minValue, maxValue, sumOfSquares));
-	    }
-	    return metricData;
-	}
-	
-	/**
+    private final Context context;
+    private final HashMap<ComponentData, LinkedList<MetricData>> metrics = new HashMap<ComponentData, LinkedList<MetricData>>(); 
+
+    private boolean delivered = false;
+
+    /**
+     * Constructs a {@code Request} with a given {@link Context}.
+     * <p> See also {@link Context#createRequest()}
+     * @param context the {@link Context} for the {@code Request}
+     */
+    public Request(Context context) {
+        this.context = context;
+    }
+
+    /**
+     * Add metric to the {@code Request} for a given component.
+     * The {@link Number} value is converted to a {@code float}.
+     * The count is assumed to be 1, while minValue and maxValue are set to value.
+     * Sum of squares is calculated as the value squared.
+     * @param component the {@code ComponentData} the metric should be added to
+     * @param name the name of the metric
+     * @param value the Number value for the metric
+     * @return MetricData the newly added metric
+     */
+    public MetricData addMetric(ComponentData component, String name, Number value) {
+        MetricData metricData = null;
+        if (value != null) {
+           metricData = addMetric(component, new MetricData(name, value));
+        }
+        return metricData;
+    }
+
+    /**
+     * Add metric to the {@code Request} for a given component.
+     * All {@link Number} values are converted to {@code floats}.
+     * @param component the {@code ComponentData} the metric should be added to
+     * @param name the name of the metric
+     * @param count the number of things being measured
+     * @param value the Number value for the metric
+     * @param minValue the minimum Number value for the metric
+     * @param maxValue the maximum Number value for the metric
+     * @param sumOfSquares the sum of squared values for the metric
+     * @return MetricData the newly added metric
+     */
+    public MetricData addMetric(ComponentData component, String name, int count, Number value, Number minValue, Number maxValue, Number sumOfSquares) {
+        MetricData metricData = null;
+        if (value != null && minValue != null && maxValue != null && sumOfSquares != null) {
+            metricData = addMetric(component, new MetricData(name, count, value, minValue, maxValue, sumOfSquares));
+        }
+        return metricData;
+    }
+
+    /**
      * Deliver the {@code Request} to the New Relic metrics API.
      */
     public void deliver() {
         // do not send an empty request
         if (metrics.isEmpty()) {
-            Context.log(Level.FINE, "No metrics were reported for this poll cycle");
+            logger.debug("No metrics were reported for this poll cycle");
         } else {
             HttpURLConnection connection = null;
             
             try {
-                connection = context.createUrlConnectionForOutput();
+                Map<String, Object> data = serialize();
+                String json = JSONObject.toJSONString(data);
+                logger.debug("Sending JSON: ", json);
                 
+                connection = context.createUrlConnectionForOutput();
                 OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
+                
                 try {
-                    Map<String, Object> data = serialize();
-                    
-                    String json = JSONObject.toJSONString(data);
-                    Context.log(Level.FINE, "Sending JSON: ", json);
-                    
                     out.write(json);
                 } finally {
                     out.close();
@@ -113,13 +115,13 @@ public class Request {
                 processResponse(connection);
             }
             catch (Exception ex) {
-                Context.log(Level.SEVERE, "An error occurred communicating with the New Relic service - ", ex);
+                logger.error(ex, "An error occurred communicating with the New Relic service");
     
                 if (connection != null) {
                     try {
-                        Context.log(Level.INFO, "Response: ", connection.getResponseCode(), " : ", connection.getResponseMessage());
+                        logger.info("Response: ", connection.getResponseCode(), " : ", connection.getResponseMessage());
                      } catch (IOException e) {
-                         Context.log(Level.FINE, ex.getMessage(), ex);
+                        logger.debug(ex, ex.getMessage());
                     }
                 }
             } finally {
@@ -143,38 +145,38 @@ public class Request {
      * @param connection
      * @throws IOException
      */
-    private void processResponse(HttpURLConnection connection) throws IOException {  	
-    	int responseCode = connection.getResponseCode();
-  
+    private void processResponse(HttpURLConnection connection) throws IOException {
+        int responseCode = connection.getResponseCode();
+
         // do not log 503 responses
         if (isCollectorUnavailable(responseCode)) {
-            Context.log(Level.FINE, "Collector temporarily unavailable...continuing");
+            logger.debug("Collector temporarily unavailable...continuing");
         }
         else {
-        	// read server response
-        	String responseBody = getServerResponse(responseCode, connection);
-        	
-        	if (isResponseEmpty(responseBody)) {
-        	    Context.log(Level.INFO, "Failed server response: no response");
-        	}
-        	else if (isRemotelyDisabled(responseCode, responseBody)) {
-        		// Remote disabling by New Relic -- exit
-        	    Context.log(Level.SEVERE, "Agent has been disabled remotely by New Relic");
-        		System.err.println("SEVERE: Agent has been disabled remotely by New Relic");
-        		System.exit(EXIT_CODE);
+            // read server response
+            String responseBody = getServerResponse(responseCode, connection);
+        
+            if (isResponseEmpty(responseBody)) {
+                logger.info("Failed server response: no response, with response code: ", responseCode);
             }
-        	else if (isResponseOk(responseCode, responseBody)) {
-        	    Context.log(Level.FINE, "Server response: ", responseCode, ", ", responseBody);
-        		delivered = true;
-        		Date deliveredAt = new Date();
-        		context.setAggregationStartedAt(deliveredAt);
-        		// update last successful timestamps
-        		updateComponentTimestamps(deliveredAt);
+            else if (isRemotelyDisabled(responseCode, responseBody)) {
+                // Remote disabling by New Relic -- exit
+                logger.fatal("Agent has been disabled remotely by New Relic");
+                System.err.println("SEVERE: Agent has been disabled remotely by New Relic");
+                System.exit(EXIT_CODE);
+            }
+            else if (isResponseOk(responseCode, responseBody)) {
+                logger.debug("Server response: ", responseCode, ", ", responseBody);
+                delivered = true;
+                Date deliveredAt = new Date();
+                context.setAggregationStartedAt(deliveredAt);
+                // update last successful timestamps
+                updateComponentTimestamps(deliveredAt);
             }
             else {
-        		// all other response codes will fail
-                Context.log(Level.SEVERE, "Failed server response: ", responseCode, ", ", responseBody);
-        	}
+                // all other response codes will fail
+                logger.error("Failed server response: ", responseCode, ", ", responseBody);
+            }
         }
     }
     
@@ -185,7 +187,7 @@ public class Request {
      * @return boolean
      */
     private boolean isCollectorUnavailable(int responseCode) {
-    	return responseCode == HttpURLConnection.HTTP_UNAVAILABLE;
+        return responseCode == HttpURLConnection.HTTP_UNAVAILABLE;
     }
     
     /**
@@ -194,7 +196,7 @@ public class Request {
      * @return boolean
      */
     private boolean isResponseEmpty(String responseBody) {
-    	return responseBody == null || EMPTY_STRING.equals(responseBody);
+        return responseBody == null || EMPTY_STRING.equals(responseBody);
     }
     
     /**
@@ -206,7 +208,7 @@ public class Request {
      * @return boolean
      */
     private boolean isRemotelyDisabled(int responseCode, String responseBody) {
-    	return responseCode == HttpURLConnection.HTTP_FORBIDDEN && DISABLE_NEW_RELIC.equals(responseBody);
+        return responseCode == HttpURLConnection.HTTP_FORBIDDEN && DISABLE_NEW_RELIC.equals(responseBody);
     }
     
     /**
@@ -217,9 +219,9 @@ public class Request {
      * @return boolean
      */
     private boolean isResponseOk(int responseCode, String responseBody) {
-    	// parse json response for status message
-		String statusMessage = getStatusMessage(responseBody);
-    	return responseCode == HttpURLConnection.HTTP_OK && OK_STATUS.equals(statusMessage);
+        // parse json response for status message
+        String statusMessage = getStatusMessage(responseBody);
+        return responseCode == HttpURLConnection.HTTP_OK && OK_STATUS.equals(statusMessage);
     }
     
     /**
@@ -230,22 +232,22 @@ public class Request {
      * @throws IOException
      */
     private String getServerResponse(int responseCode, HttpURLConnection connection) throws IOException {
-    	
-    	InputStream input = getResponseStream(responseCode, connection);
-    	
-    	StringBuilder builder = new StringBuilder();
-    	if (input != null) {
-       	BufferedReader in = new BufferedReader(new InputStreamReader(input));
-   		try {
-   			String inputLine;
-   			while ((inputLine = in.readLine()) != null) {
-   				builder.append(inputLine);
-   			}
-   		} finally {
-   			in.close();
-   		}
-    	}
-    	return builder.toString();
+    
+        InputStream input = getResponseStream(responseCode, connection);
+    
+        StringBuilder builder = new StringBuilder();
+        if (input != null) {
+            BufferedReader in = new BufferedReader(new InputStreamReader(input));
+            try {
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    builder.append(inputLine);
+                }
+            } finally {
+                in.close();
+            }
+        }
+        return builder.toString();
     }
     
     /**
@@ -258,7 +260,7 @@ public class Request {
      * @throws IOException
      */
     private InputStream getResponseStream(int responseCode, HttpURLConnection connection) throws IOException {
-    	return (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) ? connection.getInputStream() : connection.getErrorStream();
+        return (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) ? connection.getInputStream() : connection.getErrorStream();
     }
     
     /**
@@ -286,9 +288,9 @@ public class Request {
         }
     }
     
-	/* package */ Map<String, Object> serialize() {		
-		return context.serialize(this);
-	}	
+    /* package */ Map<String, Object> serialize() {
+        return context.serialize(this);
+    }
 
     /* package */ List<MetricData> getMetrics(ComponentData component) {
         if( ! metrics.containsKey(component)) {
@@ -298,7 +300,7 @@ public class Request {
     }
 
     private MetricData addMetric(ComponentData component, MetricData metric) {
-        Context.log(Level.FINE, component, " : ", metric);
+        logger.debug(component, " : ", metric);
         List<MetricData> metrics = getMetrics(component);
         if (metrics.contains(metric)) {
             aggregate(metric, metrics);
