@@ -4,11 +4,11 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class EpochCounterTest {
+public class EpochProcessorTest {
 
     @Test
     public void testWithTwoValidPollCycles() throws InterruptedException {
-        EpochCounter counter = new EpochCounter();
+        EpochProcessor counter = new EpochProcessor();
         Number firstProcess = counter.process(5);
         resetTimer(counter, 1);
         Number secondProcess = counter.process(6);
@@ -19,7 +19,7 @@ public class EpochCounterTest {
 
     @Test
     public void testWithNullSecondPollCycle() throws InterruptedException {
-        EpochCounter counter = new EpochCounter();
+        EpochProcessor counter = new EpochProcessor();
         Number firstProcess = counter.process(5);
         resetTimer(counter, 1);
         Number secondProcess = counter.process(null);
@@ -36,7 +36,7 @@ public class EpochCounterTest {
 
     @Test
     public void testNullFirstPollCycle() throws InterruptedException {
-        EpochCounter counter = new EpochCounter();
+        EpochProcessor counter = new EpochProcessor();
         Number firstProcess = counter.process(null);
         resetTimer(counter, 1);
         Number secondProcess = counter.process(5);
@@ -48,7 +48,7 @@ public class EpochCounterTest {
         assertEquals(1.0, thirdProcess.doubleValue(), 0.1);
     }
 
-    private void resetTimer(EpochCounter counter, int secondsToRemove) {
+    private void resetTimer(EpochProcessor counter, int secondsToRemove) {
         counter.lastTime.setTime(counter.lastTime.getTime() - (secondsToRemove * 1000));
     }
 

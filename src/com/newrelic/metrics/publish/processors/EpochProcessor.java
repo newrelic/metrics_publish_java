@@ -4,18 +4,15 @@ import java.util.Date;
 
 /**
  * A {@link Processor} for metric values over a time interval.
- *
- * <p>
- * This class is now deprecated and will be removed in a future release. See {@link EpochProcessor}.
  */
-public class EpochCounter implements Processor {
+public class EpochProcessor implements Processor {
     private Number lastValue;
     /* Package */ Date lastTime;
 
     /**
      * Constructs an {@code EpochCounter}
      */
-    public EpochCounter() {
+    public EpochProcessor() {
         super();
     }
 

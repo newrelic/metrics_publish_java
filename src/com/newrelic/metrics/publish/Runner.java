@@ -25,9 +25,9 @@ import com.newrelic.metrics.publish.util.Logger;
  * in a loop that never returns.
  */
 public class Runner {
-    
+
     private static Logger logger;
-    
+
     private List<Agent> componentAgents;
     private final SDKConfiguration config;
     private int pollInterval = 60;
@@ -65,9 +65,20 @@ public class Runner {
     }
 
     /**
+     * Add an {@link Agent}
+     * @param agent the {@link Agent} to be added
+     */
+    public void add(Agent agent) {
+        componentAgents.add(agent);
+    }
+
+    /**
      * Register an {@link Agent}
      * @param agent the {@link Agent} to be registered
+     * <p>
+     * This method is now deprecated and will be removed in a future release.  Use add(Agent agent) instead.
      */
+    @Deprecated
     public void register(Agent agent) {
         componentAgents.add(agent);
     }
@@ -128,7 +139,7 @@ public class Runner {
 
     private void setupAgents() throws ConfigurationException {
         logger.debug("Setting up agents to be run");
-        
+
         createAgents();
         if(config.internalGetServiceURI() != null) {
             logger.info("Metric service URI: ", config.internalGetServiceURI());
@@ -139,12 +150,12 @@ public class Runner {
         Iterator<Agent> iterator = componentAgents.iterator();
         while (iterator.hasNext()) {
             Agent agent = iterator.next();
-            
+
             setupAgentContext(agent);
-            
+
             agent.prepareToRun();
             agent.setupMetrics();
-            
+
             //TODO this is a really awkward place to set the license key on the request
             context.licenseKey = config.getLicenseKey();
             if(config.internalGetServiceURI() != null) {
@@ -153,23 +164,23 @@ public class Runner {
             context.internalSetSSLHostVerification(config.isSSLHostVerificationEnabled());
         }
     }
-    
+
     private void setupAgentContext(Agent agent) {
         // Since this data comes from the configured agents, it needs to be initialized here.  But only set it once since
         // all agents should share the same version.
         if (context.agentData.version == null) {
             context.agentData.version = agent.getVersion();
         }
-        
+
         agent.getCollector().setContext(context);
-        agent.getCollector().createComponent(agent.getGUID(), agent.getComponentHumanLabel());
+        agent.getCollector().createComponent(agent.getGUID(), agent.getAgentName());
     }
-    
+
     private Integer getLogLimitInKilobytes() {
         Integer logLimitInKiloBytes = 25600; // 25 MB
         if (Config.getValue("log_limit_in_kbytes") instanceof String) {
             logLimitInKiloBytes = Integer.valueOf(Config.<String>getValue("log_limit_in_kbytes"));
-        } 
+        }
         else if (Config.getValue("log_limit_in_kbytes") instanceof Number) {
             logLimitInKiloBytes = Config.<Long>getValue("log_limit_in_kbytes").intValue();
         }
@@ -195,9 +206,9 @@ public class Runner {
                 for (Iterator<Agent> iterator = componentAgents.iterator(); iterator.hasNext();) {
                     Agent agent = iterator.next();
                     agent.getCollector().setRequest(request);
-                    logger.debug("Beginning poll cycle for agent: '", agent.getComponentHumanLabel(), "'");
+                    logger.debug("Beginning poll cycle for agent: '", agent.getAgentName(), "'");
                     agent.pollCycle();
-                    logger.debug("Ending poll cycle for agent: '", agent.getComponentHumanLabel(), "'");
+                    logger.debug("Ending poll cycle for agent: '", agent.getAgentName(), "'");
                 }
 
                 request.deliver();
