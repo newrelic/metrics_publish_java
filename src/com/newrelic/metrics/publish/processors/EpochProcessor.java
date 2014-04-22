@@ -10,7 +10,7 @@ public class EpochProcessor implements Processor {
     /* Package */ Date lastTime;
 
     /**
-     * Constructs an {@code EpochCounter}
+     * Constructs an {@code EpochProcessor}
      */
     public EpochProcessor() {
         super();

@@ -76,7 +76,7 @@ public class Runner {
      * Register an {@link Agent}
      * @param agent the {@link Agent} to be registered
      * <p>
-     * This method is now deprecated and will be removed in a future release.  Use add(Agent agent) instead.
+     * This method is now deprecated and will be removed in a future release.  Use {@link Agent#add(Agent)} instead.
      */
     @Deprecated
     public void register(Agent agent) {

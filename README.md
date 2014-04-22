@@ -31,23 +31,23 @@ The following will guide you through the process of writing a Platform plugin wi
 
 Core classes to be aware of in the SDK:
 
-* **Agent** - Agent is an abstract base class where most of your plugin logic should live.  When writing a plugin, you will create a class that extends Agent and overrides several key methods such as pollCycle() and getAgentName().  Each instance of an Agent should correspond to an instance of a thing you are monitoring (e.g. You may have a MySQLAgent.java file that extends Agent, so each instance of MySQLAgent would represent a different MySQL Server you are monitoring.)
+* **Agent** - When writing a plugin, you will create a class that extends the SDK's abstract base Agent class and overrides several key methods such as `pollCycle()` and `getAgentName()`.  Each instance of an Agent should correspond to an instance of a thing you are monitoring (e.g. You may have a MySQLAgent.java file that extends Agent, so each instance of MySQLAgent would represent a different MySQL Server you are monitoring.)
 
 * **AgentFactory** - AgentFactory is an abstract base class that is meant to help facilitate creation of Agents from the well-defined configuration file 'plugin.json'.
 
-* **Runner** - Runner is the main entrypoint class for the SDK.  Essentially you will create an instance of a Runner, assign either your programmatically configured Agents or your AgentFactory to it, and then call setupAndRun() which will begin invoking the 'pollCycle()' method on each of your Agents once per polling interval.
+* **Runner** - Runner is the main entrypoint class for the SDK.  Essentially you will create an instance of a Runner, assign either your programmatically configured Agents or your AgentFactory to it, and then call `setupAndRun()` which will begin invoking the `pollCycle()` method on each of your Agents once per polling interval.
 
 * **Processors** - Processors are used to help with more complex metrics.  For example, many metrics are simply scalar values (e.g. Number of database connections, bytes read, etc) but many times you care about the metric in relation to something else such as time. We provide processors (such as the EpochProcessor) to do the heavy lifting for you.  That is, instead of just reporting 'Number of database connections' you can run that number through an EpochProcessor each poll interval and end up with 'Number of database connections per minute'.
 
-* **Logger** - The Logger class is provided to help you easily log data within your plugin in a consistent manner to the SDK.  Simply create a new instance of a Logger using the Logger.getLogger() method and you will immediately be able provide robust logging to yourself and your plugin's consumers.
+* **Logger** - The Logger class is provided to help you easily log data within your plugin in a consistent manner to the SDK.  Simply create a new instance of a Logger using the `Logger.getLogger()` method and you will immediately be able provide robust logging to yourself and your plugin's consumers.
 
 ### Creating your Plugin ###
 
-* [Step 0 - Know what you want to monitor](#step-0-know-what-you-want-to-monitor)
-* [Step 1 - Create your Agent class](#step-1-create-your-agent-class)
-* [Step 2 - Initialize your Agent instances](#step-2-initialize-your-agent-instances)
-* [Step 3 - Setup your Agents with the Runner](#setup-your-agents-with-the-runner)
-* [Step 4 - Packaging and distribution](#packaging-and-distribution)
+* [Step 0 - Know what you want to monitor](#step-0--know-what-you-want-to-monitor)
+* [Step 1 - Create your Agent class](#step-1--create-your-agent-class)
+* [Step 2 - Initialize your Agent instances](#step-2--initialize-your-agent-instances)
+* [Step 3 - Setup your Agents with the Runner](#step-3--setup-your-agents-with-the-runner)
+* [Step 4 - Packaging and distribution](#step-4--packaging-and-distribution)
 
 #### Step 0 - Know what you want to monitor ####
 
@@ -58,15 +58,15 @@ It is very important to consider what dashboards you'd like to show for whatever
 Every plugin should have one class that extends the SDK's Agent class. This can be thought of as the blueprint for whatever it is you are monitoring (e.g. if you are creating a plugin to monitor MySQL instances you should create a single MySQLAgent class that extends from Agent).  There are three distinct things that must be done for each of your Agent subclasses:
 
 * Overload the constructor
-* Override the getAgentName() method
-* Override the pollCycle() method
+* Override the `getAgentName()` method
+* Override the `pollCycle()` method
 
 ##### Overload the constructor #####
 
 The only requirement for this step is that you pass two well-defined fields to the base SDK Agent class' constructor:
 
 * *GUID* - This is a string field representing the unique identifier for your plugin.  We highly recommend using Java package notation (i.e. com.mycompany.pluginname)
-* *Version* - This is a string field representing the version of your plugin which should follow the semantic versioning scheme (e.g. "1.2.3")
+* *Version* - This is a string field representing the version of your plugin which should follow the [semantic versioning](http://semver.org/) scheme (e.g. "1.2.3")
 
 This is not a requirement, but we highly recommend overloading the constructor to take in any instance-specific fields to simplify Agent creation for Step 2.
 
@@ -92,7 +92,8 @@ Example:
 This method determines the name that will appear in the New Relic UI for a given instance.  Continuing the MySQL analogy, you would likely use the hostname of each MySQL Server you are monitoring to make things easy to trace.
 
 Example: 
-	
+
+```
     private String name;
     
     public ExampleAgent(String name, …) {
@@ -102,27 +103,29 @@ Example:
     
     @Override
     public String getAgentName() {
-       	return name; 
+        return name; 
     }
-
+```
 	
 
 ##### Override the pollCycle() method #####
 
-This method will be invoked once for each Agent per polling interval while your plugin is running.  This is where your logic to gather and report metric values should live.  For each metric value you'd like to report, simply call the reportMetric() method within your pollCycle() code.  After each Agent's pollCycle() method has been invoked all reported metrics will be sent to the New Relic service in a REST request.
+This method will be invoked once for each Agent per polling interval while your plugin is running.  This is where your logic to gather and report metric values should live.  For each metric value you'd like to report, simply call the `reportMetric()` method within your `pollCycle()` code.  After each Agent's `pollCycle()` method has been invoked all reported metrics will be sent to the New Relic service in a REST request.
 
-The reportMetric() method signature is the following:
+The `reportMetric()` method signature is the following:
 
-	/**
-     * Report a metric with a name, unit(s) and value.
-     * The count is assumed to be 1, while minValue and maxValue are set to value.
-     * Sum of squares is calculated as the value squared.
-     * If the value is null, the reporting is skipped.
-     * @param metricName the name of the metric
-     * @param units the units to report
-     * @param value the Number value to report
-     */
-	public void reportMetric(String metricName, String units, Number value) { … }
+```
+/**
+ * Report a metric with a name, unit(s) and value.
+ * The count is assumed to be 1, while minValue and maxValue are set to value.
+ * Sum of squares is calculated as the value squared.
+ * If the value is null, the reporting is skipped.
+ * @param metricName the name of the metric
+ * @param units the units to report
+ * @param value the Number value to report
+ */
+public void reportMetric(String metricName, String units, Number value) { … }
+```
 
 Example: 
 	
@@ -152,9 +155,9 @@ That's it, your Agent class is ready, now all you need to do is initialize them 
 
 A plugin's value comes from the ability to dynamically configure instance information so it can be reused by others to monitor their infrastructure without code changes.  This requires instance data to come from a configuration file, which was traditionally up to the plugin developer to define.  In version 2 and later of the SDK, this information has been standardized into the 'plugin.json' file.  
 
-##### Working with the './config/plugin.json' file #####
+##### Working with the 'plugin.json' file #####
 
-The 'plugin.json' file is used by all Platform Plugins to configure instance-specific information such as the hostnames you are going to monitor or the user/password combos to access them.  The file is standard JSON and only requires that you have a root-level property named "agents" that contains an array of objects.  Each object in that array should correspond to an instance of something you are monitoring.  Essentially each JSON object in the "agents" array should have all the fields necessary to initialize an instance of your Agent class created in Step 1.  You can pass whatever fields or create as many Agents as you'd like here.
+The 'plugin.json' file (located in the './config' directory next to your jar)is used by all Platform Plugins to configure instance-specific information such as the hostnames you are going to monitor or the user/password combos to access them.  The file is standard JSON and only requires that you have a root-level property named "agents" that contains an array of objects.  Each object in that array should correspond to an instance of something you are monitoring.  Essentially each JSON object in the "agents" array should have all the fields necessary to initialize an instance of your Agent class created in Step 1.  You can pass whatever fields or create as many Agents as you'd like here.
 
 Example 'plugin.json' file:
 
@@ -177,26 +180,26 @@ Example 'plugin.json' file:
 ```
 ##### Creating an AgentFactory class #####
 
-Since all plugins require JSON configuration, it would be annoying for every plugin developer to have to rewrite the logic to parse a JSON file and initialize their Agents, so instead the SDK provides an AgentFactory class that you can use to automatically turn your JSON configuration into initialized Agents.  Simply extend the AgentFactory class and override the createConfiguredAgent() method.  When the SDK first starts, it will parse the 'plugin.json' file for you and map the JSON options into a map of strings to objects that you can then use to initialize and return an instance of your Agent.
+Since all plugins require JSON configuration, it would be annoying for every plugin developer to have to rewrite the logic to parse a JSON file and initialize their Agents, so instead the SDK provides an AgentFactory class that you can use to automatically turn your JSON configuration into initialized Agents.  Simply extend the AgentFactory class and override the `createConfiguredAgent()` method.  When the SDK first starts, it will parse the 'plugin.json' file for you and map the JSON options into a map of strings to objects that you can then use to initialize and return an instance of your Agent.
 
 Example:
 
 ```
-public class ExampleAgentFactory extends AgentFactory {
+	public class ExampleAgentFactory extends AgentFactory {
 
-    @Override
-    public Agent createConfiguredAgent(Map<String, Object> properties) throws ConfigurationException {
-        String name = (String) properties.get("name");
-        String host = (String) properties.get("host");
-        Integer port = (Integer) properties.get("port");
+    	@Override
+    	public Agent createConfiguredAgent(Map<String, Object> properties) throws ConfigurationException {
+        	String name = (String) properties.get("name");
+        	String host = (String) properties.get("host");
+        	Integer port = (Integer) properties.get("port");
         
-        if (name == null || host == null || port == null) {
-            throw new ConfigurationException("'name', 'host', and 'port' cannot be null.");
-        }
+        	if (name == null || host == null || port == null) {
+            	throw new ConfigurationException("'name', 'host', and 'port' cannot be null.");
+        	}
         
-        return new ExampleAgent(name, host, port);
-    }
-}
+        	return new ExampleAgent(name, host, port);
+    	}
+	}
 ```
 
 #### Step 3 - Set up your Agents with the Runner ####
@@ -228,17 +231,16 @@ In order to make your plugin NPI-compatible simply ensure the following:
 * Your plugin was written with version 2 or later of the Java SDK.
 * Your plugin is packaged using the tar.gz compression protocol.
 * Your executable jar is named 'plugin.jar' and is located in the root of your plugin folder.
-* Plugin configuration is read from 'plugin.json' file in the './config'.
 * You do not use any relative references in your code.
 * Your plugin contains a 'plugin.template.json' and a 'newrelic.template.json' file in the './config' directory.
 
-Once your plugin is NPI-compatible from a code perspective, place it somewhere that is accessible for consumers to download.  Most customers add the compressed distributable to a 'dist' folder in their Github repository.  From there, go through our publisher flow and be sure to mark your plugin for "NPI" distribution.
+Once your plugin is NPI-compatible from a code perspective, place it somewhere that is accessible for consumers to download.  Most customers add the compressed distributable to a 'dist' folder in their GitHub repository.  From there, go through our publisher flow and be sure to mark your plugin for "NPI" distribution.
 
 #### Next Steps ####
 
 That's it, you've written your first plugin.  If anything wasn't clear or you'd like a more in-depth code example, check out our [example Wikipedia plugin](https://github.com/newrelic-platform/newrelic_java_wikipedia_plugin).  
 
-Once you're comfortable with the plugin and you're ready to set up some dashboards check out [this](https://docs.newrelic.com/docs/plugin-dev/publishing-your-plugin) link for a detailed look at the publishing process.
+Once you're comfortable with the plugin and you're ready to set up some dashboards check out the following link for a detailed look at the [publishing process](https://docs.newrelic.com/docs/plugin-dev/publishing-your-plugin).
 
 ## Configuration Options ##
 

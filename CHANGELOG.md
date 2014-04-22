@@ -23,8 +23,8 @@
 * `Runner` constructor now correctly advertises that it throws a checked `ConfigurationException`
 * `Agent#prepareToRun(Context)` has been removed in favor of `Agent#prepareToRun()`
 * The `EpochCounter` class has been renamed to `EpochProcessor`
-* `Agent`'s getComponentHumanLabel() has been deprecated for getAgentName()
-* `Runner`'s register(Agent) method has been deprecated for add(Agent)
+* `Agent#getComponentHumanLabel()` has been deprecated for `Agent#getAgentName()`
+* `Runner#register(Agent)` method has been deprecated for `Runner#add(Agent)`
 
 ### v1.2.3 - March 21, 2014 ###
 
