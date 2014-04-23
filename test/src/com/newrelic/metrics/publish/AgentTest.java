@@ -27,7 +27,7 @@ public class AgentTest {
         Context context = new Context();
         context.agentData.version = VERSION;
         agent.getCollector().setContext(context);
-        agent.getCollector().createComponent(agent.getGUID(), agent.getComponentHumanLabel());
+        agent.getCollector().createComponent(agent.getGUID(), agent.getAgentName());
 
         Request request = context.createRequest();
 
@@ -81,7 +81,7 @@ public class AgentTest {
             // agent to test
             OneCycleAgent agent = new OneCycleAgent("TestAgent" + i);
             agent.getCollector().setContext(context);
-            agent.getCollector().createComponent(agent.getGUID(), agent.getComponentHumanLabel());
+            agent.getCollector().createComponent(agent.getGUID(), agent.getAgentName());
             agent.getCollector().setRequest(request);
 
             // one poll cycle
@@ -142,7 +142,7 @@ public class AgentTest {
         }
 
         @Override
-        public String getComponentHumanLabel() {
+        public String getAgentName() {
             return name;
         }
     }

@@ -7,6 +7,7 @@
 * New `Config` class for accessing configuration properties for a plugin
 * New optional `plugin.json` file for configuring `agents` and any static configuration a plugin may need
 * New `Logger` class for standard logging
+* Compatibility with the New Relic Platform Installer
 
 **Changes**
 
@@ -21,6 +22,9 @@
 * The `logging.properties` configuration file has been replaced with simplified configuration in the `newrelic.json` file. See README.md for logging configuration.
 * `Runner` constructor now correctly advertises that it throws a checked `ConfigurationException`
 * `Agent#prepareToRun(Context)` has been removed in favor of `Agent#prepareToRun()`
+* The `EpochCounter` class has been renamed to `EpochProcessor`
+* `Agent#getComponentHumanLabel()` has been deprecated for `Agent#getAgentName()`
+* `Runner#register(Agent)` method has been deprecated for `Runner#add(Agent)`
 
 ### v1.2.3 - March 21, 2014 ###
 

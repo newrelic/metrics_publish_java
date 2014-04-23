@@ -12,11 +12,11 @@ import com.newrelic.metrics.publish.util.Logger;
  * Additional hooks are provided for overriding: {@link #setupMetrics()} and {@link #prepareToRun()}. These hooks must call {@code super}.
  */
 public abstract class Agent {
-    
+
     private static final Logger logger = Logger.getLogger(Agent.class);
 
     private static final String REPORTING_METRIC_MSG = "Reporting metric: ";
-    
+
     private final String GUID;
     private final String version;
     //TODO in Ruby, this is called a "agent_human_label" but they're really labels for extensions and components
@@ -47,9 +47,10 @@ public abstract class Agent {
     /**
      * A human readable label for the component that this {@code Agent} is reporting metrics on.
      * <p> This method must be overridden by subclasses of {@code Agent}.
-     * @return String the component human label
+     * <p> This replaces the deprecated 'getComponentHumanLabel()' method.
+     * @return A name representing an instance of an Agent
      */
-    public abstract String getComponentHumanLabel();
+    public abstract String getAgentName();
 
     /**
      * A hook called when the {@code Agent} is setup.
