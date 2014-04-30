@@ -1,0 +1,4 @@
+{
+  "end_point": "http://overridden-endpoint",
+  "new_prop": "new"
+}

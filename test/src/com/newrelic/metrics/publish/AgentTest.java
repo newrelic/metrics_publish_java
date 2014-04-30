@@ -25,7 +25,9 @@ public class AgentTest {
         OneCycleAgent agent = new OneCycleAgent("TestAgent");
 
         Context context = new Context();
-        agent.prepareToRun(context);
+        context.agentData.version = VERSION;
+        agent.getCollector().setContext(context);
+        agent.getCollector().createComponent(agent.getGUID(), agent.getAgentName());
 
         Request request = context.createRequest();
 
@@ -72,12 +74,14 @@ public class AgentTest {
     public void testOnePollCycleWithMultipleComponents() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 
         Context context = new Context();
+        context.agentData.version = VERSION;
         Request request = context.createRequest();
 
         for(int i = 0; i < 3; i++) {
             // agent to test
             OneCycleAgent agent = new OneCycleAgent("TestAgent" + i);
-            agent.prepareToRun(context);
+            agent.getCollector().setContext(context);
+            agent.getCollector().createComponent(agent.getGUID(), agent.getAgentName());
             agent.getCollector().setRequest(request);
 
             // one poll cycle
@@ -138,7 +142,7 @@ public class AgentTest {
         }
 
         @Override
-        public String getComponentHumanLabel() {
+        public String getAgentName() {
             return name;
         }
     }

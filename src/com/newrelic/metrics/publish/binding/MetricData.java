@@ -9,32 +9,32 @@ import java.util.HashMap;
  * All metric values are stored as {@code floats}.
  */
 public class MetricData {
-	/* package */ String name;
-	/* package */ int count;
-	/* package */ float value;
-	/* package */ float minValue;
-	/* package */ float maxValue;
-	/* package */ float sumOfSquares;
-	
-	/* package */ MetricData(String name, Number value) {
-		this(name, 1, value.floatValue(), value.floatValue(), value.floatValue(), value.floatValue() * value.floatValue());
-	}
-	
-	/* package */ MetricData(String name, int count, Number value, Number minValue, Number maxValue, Number sumOfSquares) {
-	    this.name = name;
-	    this.count = count;
-	    this.value = value.floatValue();
-	    this.minValue = minValue.floatValue();
-	    this.maxValue = maxValue.floatValue();
-	    this.sumOfSquares = sumOfSquares.floatValue();
-	    convertValues();
-	}
-	
-	/* package */ void serialize(HashMap<String, Object> data) {
-		data.put(name, Arrays.<Number>asList(value, count, minValue, maxValue, sumOfSquares));
-	}
+    /* package */ String name;
+    /* package */ int count;
+    /* package */ float value;
+    /* package */ float minValue;
+    /* package */ float maxValue;
+    /* package */ float sumOfSquares;
 
-	/* package */ void aggregrateWith(MetricData other) {
+    /* package */ MetricData(String name, Number value) {
+        this(name, 1, value.floatValue(), value.floatValue(), value.floatValue(), value.floatValue() * value.floatValue());
+    }
+
+    /* package */ MetricData(String name, int count, Number value, Number minValue, Number maxValue, Number sumOfSquares) {
+        this.name = name;
+        this.count = count;
+        this.value = value.floatValue();
+        this.minValue = minValue.floatValue();
+        this.maxValue = maxValue.floatValue();
+        this.sumOfSquares = sumOfSquares.floatValue();
+        convertValues();
+    }
+
+    /* package */ void serialize(HashMap<String, Object> data) {
+        data.put(name, Arrays.<Number>asList(value, count, minValue, maxValue, sumOfSquares));
+    }
+
+    /* package */ void aggregrateWith(MetricData other) {
         count += other.count;
         value += other.value;
         minValue = Math.min(minValue, other.minValue);
@@ -42,17 +42,17 @@ public class MetricData {
         sumOfSquares += other.sumOfSquares;
         convertValues();
     }
-	
-	public String toString() {
-	    StringBuilder builder = new StringBuilder();
-	    builder.append("Metric: ").append(name).append(", ");
-	    builder.append("count: ").append(count).append(", ");
-	    builder.append("value: ").append(value).append(", ");
-	    builder.append("minValue: ").append(minValue).append(", ");
-	    builder.append("maxValue: ").append(maxValue).append(", ");
-	    builder.append("sumOfSquares: ").append(sumOfSquares);
-	    return builder.toString();
-	}
+
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Metric: ").append(name).append(", ");
+        builder.append("count: ").append(count).append(", ");
+        builder.append("value: ").append(value).append(", ");
+        builder.append("minValue: ").append(minValue).append(", ");
+        builder.append("maxValue: ").append(maxValue).append(", ");
+        builder.append("sumOfSquares: ").append(sumOfSquares);
+        return builder.toString();
+    }
 
     @Override
     public int hashCode() {

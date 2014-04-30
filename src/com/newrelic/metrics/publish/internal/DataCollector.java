@@ -1,6 +1,5 @@
 package com.newrelic.metrics.publish.internal;
 
-import com.newrelic.metrics.publish.Agent;
 import com.newrelic.metrics.publish.binding.ComponentData;
 import com.newrelic.metrics.publish.binding.Context;
 import com.newrelic.metrics.publish.binding.Request;
@@ -22,23 +21,11 @@ public class DataCollector {
     //  Ruby version had count but we can get it off the Request
     //  private int count;
     private Context context;
-    private final Agent agent;
 
     /**
-     * Constructs a {@code DataCollector} with the provided {@link Agent}.
-     * @param agent the {@link Agent} to construct with
+     * Constructs a {@code DataCollector}.
      */
-    public DataCollector(Agent agent) {
-        this.agent = agent;
-    }
-
-    /**
-     * Get the {@link Agent}
-     * @return agent
-     */
-    public Agent getAgent() {
-        return agent;
-    }
+    public DataCollector() {}
 
     /**
      * Get the {@link Context}
@@ -54,11 +41,15 @@ public class DataCollector {
      */
     public void setContext(Context context) {
         this.context = context;
-
-        //The agentData and componentData parts of the Request remain for the duration of this instance
-        componentData = context.createComponent();
-        componentData.guid = agent.getGUID();
-        componentData.name = agent.getComponentHumanLabel();
+    }
+    
+    public void createComponent(String guid, String componentName) {
+        if (componentData == null) {
+            // The agentData and componentData parts of the Request remain for the duration of this instance
+            componentData = context.createComponent();
+            componentData.guid = guid;
+            componentData.name = componentName;
+        }
     }
 
     /**

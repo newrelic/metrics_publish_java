@@ -32,5 +32,4 @@ public class ConfigurationException extends Exception {
         super(cause);
     }
 
-    
 }

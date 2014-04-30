@@ -1,42 +1,31 @@
 package com.newrelic.metrics.publish.binding;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Formatter;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 
-import com.newrelic.metrics.publish.configuration.SDKConfiguration;
+import com.newrelic.metrics.publish.configuration.Config;
+import com.newrelic.metrics.publish.util.Logger;
 
 /**
  * Provisional API which is subject to change.
  * The context for a {@link Request} that manages {@link AgentData} and {@link ComponentData}.
  */
 public class Context {
+    
+    private static final Logger logger = Logger.getLogger(Context.class);
 
     private static final String SERVICE_URI = "https://platform-api.newrelic.com/platform/v1/metrics";
-    private static final String LOG_CONFIG_FILE = "logging.properties";
-    private static final String LOGGER_NAME = "com.newrelic.metrics.publish";
     
     private static final String POST = "POST";
     private static final String X_LICENSE_KEY = "X-License-Key";
@@ -45,11 +34,10 @@ public class Context {
     private static final String ACCEPT = "Accept";
     private static final String AGENT = "agent";
     private static final String COMPONENTS = "components";
+    private static final String USER_AGENT = "User-Agent";
 
     private static final long AGGREGATION_LIMIT = TimeUnit.MINUTES.toMillis(20);
     private static final int CONNECTION_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(20);
-    
-    private static Logger LOGGER;
     
     public String licenseKey;
     public AgentData agentData;
@@ -60,104 +48,6 @@ public class Context {
 
     private Request lastRequest;
     private Date aggregationStartedAt;
-
-    /**
-     * Get a {@link java.util.logging.Logger} object for logging that is registered with the name 'com.newrelic.metrics.publish'.
-     * <p> Developers should be aware that the provided logging framework may change in the future as the SDK changes.
-     * <p> The logger first looks for a 'logging.properties' file for configuration.
-     * If the configuration file cannot be found, the logger will be initialized with default {@link java.util.logging.Logger} properties.
-     * The default behavior will use a {@link java.util.logging.ConsoleHandler} (System.err) and log at the INFO level.
-     * The 'com.newrelic.metrics.publish' Logger is set to log level ALL so that it can be overridden by the
-     * {@link java.util.logging.ConsoleHandler} and {@link java.util.logging.FileHandler} log levels which are specified in the
-     * 'logging.properties' file.
-     * @return Logger
-     */
-    public static Logger getLogger() {
-        if (LOGGER == null) {
-            initLogger();
-        }
-        return LOGGER;
-    }
-
-    /**
-     * Set a {@link java.util.logging.Logger} object.
-     * This method should only be called to override the default logger settings.
-     * @param logger the {@link java.util.logging.Logger} to set
-     */
-    public static void setLogger(Logger logger) {
-        LOGGER = logger;
-    }
-    
-    /**
-     * Log a variable length array of objects at a provided {@link java.util.logging.Level}. 
-     * This will only concatenate the log messages if the log level is currently loggable.
-     * <p> Ex. {@code Context.log(Level.FINE, "Name: ", name, ", Value: ", value);}
-     * <p> Developers should be aware that the provided logging framework may change in the future as the SDK changes.
-     * <p> See {@link #getLogger()} and {@link Logger#isLoggable(Level)} for additional information.
-     * @param level
-     * @param messages
-     */
-    public static void log(Level level, Object... messages) {
-        if (getLogger().isLoggable(level)) {
-            StringBuilder builder = new StringBuilder();
-            Throwable throwable = null;
-            for (Object message : messages) {
-               if (message instanceof Throwable) {
-                  throwable = (Throwable) message;
-               } else {
-                  builder.append(message);
-               }
-            }
-            getLogger().log(level, builder.toString(), throwable);
-        }
-    }
-
-    /**
-     * Initializes the logger by looking for a 'logging.properties' file.
-     * <p> See {@link #getLogger()} for additional information.
-     */
-    private static void initLogger() {
-        InputStream inputStream = null;
-        try {
-        	String path = SDKConfiguration.getConfigDirectory() + File.separatorChar + LOG_CONFIG_FILE;
-            inputStream = new FileInputStream(path);
-            LogManager.getLogManager().readConfiguration(inputStream);
-        } catch (SecurityException e) {
-            System.err.println("WARNING: Logging is not currently configured. Please add a " + SDKConfiguration.getConfigDirectory() + "/logging.properties file to enable additional logging.");
-        } catch (IOException e) {
-            System.err.println("WARNING: Logging is not currently configured. Please add a " + SDKConfiguration.getConfigDirectory() + "/logging.properties file to enable additional logging.");
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    System.err.println("WARNING: An error has occurred initializing logging. Please add a " + SDKConfiguration.getConfigDirectory() + "/logging.properties file to enable additional logging.");
-                    System.err.println(e);
-                }
-            }
-        }
-        Logger logger = Logger.getLogger(LOGGER_NAME);
-        // setting handler's formatter to a custom formatter
-        for(Handler handler : logger.getHandlers()) {
-            handler.setFormatter(new LogFormatter());
-        }
-        // setting the logger's level to the highest handler level so that it
-        // can be overridden by the ConsoleHandler and FileHandler log levels.
-        Level level = getInitialLogLevel(logger.getHandlers());
-        logger.setLevel(level);
-        setLogger(logger);
-    }
-    
-    /* package */ static Level getInitialLogLevel(Handler[] handlers) {
-        Level level = Level.INFO;
-        for(Handler handler : handlers) {
-            handler.setFormatter(new LogFormatter());
-            if (handler.getLevel().intValue() < level.intValue()) {
-                level = handler.getLevel();
-            }
-        }
-        return level;
-    }
 
     /**
      * Constructs a {@code Context}
@@ -262,7 +152,8 @@ public class Context {
      */
     /* package */ HttpURLConnection createUrlConnectionForOutput() throws IOException {
         URL serviceUrl = new URL(serviceURI);
-        log(Level.FINE, "Metric service url: ", serviceUrl);
+        
+        logger.debug("Metric service url: ", serviceUrl);
 
         HttpURLConnection connection = (HttpURLConnection) serviceUrl.openConnection();
         connection.setRequestMethod(POST);
@@ -271,6 +162,7 @@ public class Context {
         connection.addRequestProperty(ACCEPT, APPLICATION_JSON);
         connection.setConnectTimeout(CONNECTION_TIMEOUT);
         connection.setReadTimeout(CONNECTION_TIMEOUT);
+        connection.addRequestProperty(USER_AGENT, getUserAgentString());
 
         // if not verifying ssl host and using https, add custom hostname verifier
         // else use default hostname verifier
@@ -305,66 +197,8 @@ public class Context {
 
         return output;
     }
-
-    /**
-     * Using the source of {@link java.util.logging.SimpleFormatter} as a starting point.
-     * LogFormatter adjusts the line formatting for each log message.
-     * Better timestamp formatting and shrinking the log statement to one line.
-     */
-    static private class LogFormatter extends Formatter {
-        private static final String LEFT_BRACKET = "[";
-        private static final String RIGHT_BRACKET = "]";
-        private static final String SPACE = " ";
-        private static final String PIPE = "|";
-
-        Date date = new Date();
-        private final static String format = "{0,date,yyyy-MM-dd} {0,time,HH:mm:ss Z}";
-        private MessageFormat formatter;
-
-        private Object args[] = new Object[1];
-
-        private String lineSeparator = System.getProperty("line.separator");
-
-        /**
-         * Format the given LogRecord.
-         * @param record the log record to be formatted.
-         * @return a formatted log record
-         */
-        @Override
-        public synchronized String format(LogRecord record) {
-            StringBuilder builder = new StringBuilder();
-            builder.append(LEFT_BRACKET);
-            // Minimize memory allocations here.
-            date.setTime(record.getMillis());
-            args[0] = date;
-            StringBuffer text = new StringBuffer();
-            if (formatter == null) {
-                formatter = new MessageFormat(format);
-            }
-            formatter.format(args, text, null);
-            builder.append(text);
-            builder.append(RIGHT_BRACKET).append(SPACE);
-            if (record.getSourceClassName() != null) {
-                builder.append(record.getSourceClassName());
-            } else {
-                builder.append(record.getLoggerName());
-            }
-            builder.append(SPACE).append(PIPE).append(SPACE);
-            builder.append(record.getLevel().getLocalizedName());
-            builder.append(SPACE).append(PIPE).append(SPACE);
-            String message = formatMessage(record);
-            builder.append(message);
-            builder.append(lineSeparator);
-            if (record.getThrown() != null) {
-                try {
-                    StringWriter sw = new StringWriter();
-                    PrintWriter pw = new PrintWriter(sw);
-                    record.getThrown().printStackTrace(pw);
-                    pw.close();
-                    builder.append(sw.toString());
-                } catch (Exception ex) {}
-            }
-            return builder.toString();
-        }
+    
+    /* package */ String getUserAgentString() {
+    	return String.format("JavaSDK/%s (%s %s)", Config.getSdkVersion(), System.getProperty("os.name"), System.getProperty("os.version"));
     }
 }

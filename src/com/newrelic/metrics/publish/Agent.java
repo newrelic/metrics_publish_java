@@ -1,9 +1,7 @@
 package com.newrelic.metrics.publish;
 
-import java.util.logging.Level;
-
-import com.newrelic.metrics.publish.binding.Context;
 import com.newrelic.metrics.publish.internal.DataCollector;
+import com.newrelic.metrics.publish.util.Logger;
 
 /**
  * An extensible class for gathering metrics from a system.
@@ -15,13 +13,15 @@ import com.newrelic.metrics.publish.internal.DataCollector;
  */
 public abstract class Agent {
 
+    private static final Logger logger = Logger.getLogger(Agent.class);
+
     private static final String REPORTING_METRIC_MSG = "Reporting metric: ";
-    
+
     private final String GUID;
     private final String version;
     //TODO in Ruby, this is called a "agent_human_label" but they're really labels for extensions and components
 
-    private DataCollector collector;
+    private final DataCollector collector;
 
     /**
      * Constructs an {@code Agent} with provided GUID (Globally Unique Identifier) and version.
@@ -34,6 +34,7 @@ public abstract class Agent {
         super();
         this.GUID = GUID;
         this.version = version;
+        this.collector = new DataCollector();
     }
 
     /**
@@ -46,16 +47,17 @@ public abstract class Agent {
     /**
      * A human readable label for the component that this {@code Agent} is reporting metrics on.
      * <p> This method must be overridden by subclasses of {@code Agent}.
-     * @return String the component human label
+     * <p> This replaces the deprecated 'getComponentHumanLabel()' method.
+     * @return A name representing an instance of an Agent
      */
-    public abstract String getComponentHumanLabel();
+    public abstract String getAgentName();
 
     /**
      * A hook called when the {@code Agent} is setup.
      * Subclasses may override but must call {@code super}.
      */
     public void setupMetrics() {
-        Context.log(Level.FINE, "setupMetrics");
+        logger.debug("Setting up metrics");
     }
 
     /**
@@ -77,30 +79,9 @@ public abstract class Agent {
     /**
      * A hook called when the {@code Agent} is setup.
      * Subclasses may override but must call {@code super}.
-     * This function has been deprecated for prepareToRun({@code Context})
      */
-    @Deprecated
     public void prepareToRun() {
-        //This needs to be done after being configured to ensure the binding model created by the DataCollector
-        //has the most recent values from this
-        prepareToRun(new Context());
-    }
-
-    /**
-     * A hook called when the {@code Agent} is setup.
-     * Subclasses may override but must call {@code super}.
-     * Any agents sharing a single context will send their metrics
-     * in a single REST request.
-     */
-    public void prepareToRun(Context context) {
-        collector = new DataCollector(this);
-        collector.setContext(context);
-
-        // Since this data comes from the configured agents, it needs to be initialized here.  But only set it once since
-        // all agents should share the same version.
-        if(context.agentData.version == null) {
-            context.agentData.version = version;
-        }
+        logger.debug("Preparing to run");
     }
 
     /**
@@ -115,7 +96,7 @@ public abstract class Agent {
      */
     public void reportMetric(String metricName, String units, Number value) {
         if (value != null) {
-            Context.log(Level.FINE, REPORTING_METRIC_MSG, metricName);
+            logger.debug(REPORTING_METRIC_MSG, metricName);
             collector.addData(metricName, units, value);
         }
     }
@@ -134,7 +115,7 @@ public abstract class Agent {
      */
     public void reportMetric(String metricName, String units, int count, Number value, Number minValue, Number maxValue, Number sumOfSquares) {
         if (value != null && minValue != null && maxValue != null && sumOfSquares != null) {
-            Context.log(Level.FINE, REPORTING_METRIC_MSG, metricName);
+            logger.debug(REPORTING_METRIC_MSG, metricName);
             collector.addData(metricName, units, count, value, minValue, maxValue, sumOfSquares);
         }
     }

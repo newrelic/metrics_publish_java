@@ -1,0 +1,23 @@
+{
+  "end_point": "http://ENDPOINT",
+  "license_key": "LICENSE_KEY",
+  "enabled": true,
+  "float_test": 10.3,
+  "log_level": "info",
+  "log_file_name": "logs/newrelic_plugin_installer.log",
+  "log_max_size_in_mb": 25,
+  "map_prop": {
+    "one": 1,
+    "two": false
+  },
+  "list_prop": [
+    {
+      "three": 3
+    }
+    {
+      "four": {
+        "inner_value": true
+      }
+    }
+  ]
+}
