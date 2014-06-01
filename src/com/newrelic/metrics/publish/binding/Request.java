@@ -15,7 +15,10 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-import com.newrelic.metrics.publish.util.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 /**
  * Provisional API which is subject to change.
@@ -27,7 +30,8 @@ import com.newrelic.metrics.publish.util.Logger;
  */
 public class Request {
 
-    private static final Logger logger = Logger.getLogger(Request.class);
+    private static final Marker fatal = MarkerFactory.getMarker("FATAL");
+    private static final Logger logger = LoggerFactory.getLogger(Request.class);
     
     private static final String EMPTY_STRING = "";
     private static final String STATUS = "status";
@@ -100,7 +104,7 @@ public class Request {
             try {
                 Map<String, Object> data = serialize();
                 String json = JSONObject.toJSONString(data);
-                logger.debug("Sending JSON: ", json);
+                logger.debug("Sending JSON: " + json);
                 
                 connection = context.createUrlConnectionForOutput();
                 OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
@@ -115,13 +119,13 @@ public class Request {
                 processResponse(connection);
             }
             catch (Exception ex) {
-                logger.error(ex, "An error occurred communicating with the New Relic service");
+                logger.error("An error occurred communicating with the New Relic service: " + ex);
     
                 if (connection != null) {
                     try {
-                        logger.info("Response: ", connection.getResponseCode(), " : ", connection.getResponseMessage());
+                        logger.info("Response: " + connection.getResponseCode() + " : " + connection.getResponseMessage());
                      } catch (IOException e) {
-                        logger.debug(ex, ex.getMessage());
+                        logger.debug(ex.getMessage() + " - " + ex);
                     }
                 }
             } finally {
@@ -157,16 +161,16 @@ public class Request {
             String responseBody = getServerResponse(responseCode, connection);
         
             if (isResponseEmpty(responseBody)) {
-                logger.info("Failed server response: no response, with response code: ", responseCode);
+                logger.info("Failed server response: no response, with response code: " + responseCode);
             }
             else if (isRemotelyDisabled(responseCode, responseBody)) {
                 // Remote disabling by New Relic -- exit
-                logger.fatal("Agent has been disabled remotely by New Relic");
+                logger.error(fatal, "Agent has been disabled remotely by New Relic");
                 System.err.println("SEVERE: Agent has been disabled remotely by New Relic");
                 System.exit(EXIT_CODE);
             }
             else if (isResponseOk(responseCode, responseBody)) {
-                logger.debug("Server response: ", responseCode, ", ", responseBody);
+                logger.debug("Server response: " + responseCode + ", " + responseBody);
                 delivered = true;
                 Date deliveredAt = new Date();
                 context.setAggregationStartedAt(deliveredAt);
@@ -175,7 +179,7 @@ public class Request {
             }
             else {
                 // all other response codes will fail
-                logger.error("Failed server response: ", responseCode, ", ", responseBody);
+                logger.error("Failed server response: " + responseCode + ", " + responseBody);
             }
         }
     }
@@ -300,7 +304,7 @@ public class Request {
     }
 
     private MetricData addMetric(ComponentData component, MetricData metric) {
-        logger.debug(component, " : ", metric);
+        logger.debug("Adding metric: " + component, metric);
         List<MetricData> metrics = getMetrics(component);
         if (metrics.contains(metric)) {
             aggregate(metric, metrics);

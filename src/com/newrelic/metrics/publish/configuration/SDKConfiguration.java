@@ -1,6 +1,7 @@
 package com.newrelic.metrics.publish.configuration;
 
-import com.newrelic.metrics.publish.util.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An object representation of the data read from the {@code newrelic.properties} configuration file.
@@ -11,7 +12,7 @@ import com.newrelic.metrics.publish.util.Logger;
 @Deprecated
 public class SDKConfiguration {
 
-    private static final Logger logger = Logger.getLogger(SDKConfiguration.class);
+    private static final Logger logger = LoggerFactory.getLogger(SDKConfiguration.class);
     
     private static final String DEFAULT_LICENSE_KEY = "YOUR_LICENSE_KEY_HERE";
 
@@ -42,7 +43,7 @@ public class SDKConfiguration {
 
         if (Config.getValue("ssl_host_verification") != null) {
             sslHostVerification = (Boolean) Config.getValue("ssl_host_verification");
-            logger.debug("Using SSL host verification: ", sslHostVerification);
+            logger.debug("Using SSL host verification: " + sslHostVerification);
         }
         
         initProxySettings();
@@ -101,7 +102,7 @@ public class SDKConfiguration {
         
         if (Config.getValue("proxy_host") != null) {
             System.setProperty(protocol + ".proxyHost", Config.<String>getValue("proxy_host"));
-            logger.info("Using proxy host: ", Config.<String>getValue("proxy_host"));
+            logger.info("Using proxy host: " + Config.<String>getValue("proxy_host"));
         }
         
         if (Config.getValue("proxy_port") != null) {
@@ -109,13 +110,13 @@ public class SDKConfiguration {
                 throw new ConfigurationException("'proxy_port' must be a String");
             } else {
                 System.setProperty(protocol + ".proxyPort", Config.<String>getValue("proxy_port"));
-                logger.info("Using proxy port: ", Config.<String>getValue("proxy_port"));
+                logger.info("Using proxy port: " + Config.<String>getValue("proxy_port"));
             }
         }
         
         if (Config.getValue("proxy_username") != null) {
             System.setProperty(protocol + ".proxyUser", Config.<String>getValue("proxy_username"));
-            logger.info("Using proxy username: ", Config.<String>getValue("proxy_username"));
+            logger.info("Using proxy username: " + Config.<String>getValue("proxy_username"));
         }
         
         if (Config.getValue("proxy_password") != null) {

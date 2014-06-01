@@ -15,15 +15,16 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 
 import com.newrelic.metrics.publish.configuration.Config;
-import com.newrelic.metrics.publish.util.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provisional API which is subject to change.
  * The context for a {@link Request} that manages {@link AgentData} and {@link ComponentData}.
  */
 public class Context {
-    
-    private static final Logger logger = Logger.getLogger(Context.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(Context.class);
 
     private static final String SERVICE_URI = "https://platform-api.newrelic.com/platform/v1/metrics";
     
@@ -153,7 +154,7 @@ public class Context {
     /* package */ HttpURLConnection createUrlConnectionForOutput() throws IOException {
         URL serviceUrl = new URL(serviceURI);
         
-        logger.debug("Metric service url: ", serviceUrl);
+        logger.debug("Metric service url: " + serviceUrl);
 
         HttpURLConnection connection = (HttpURLConnection) serviceUrl.openConnection();
         connection.setRequestMethod(POST);
