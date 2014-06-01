@@ -1,7 +1,8 @@
 package com.newrelic.metrics.publish;
 
 import com.newrelic.metrics.publish.internal.DataCollector;
-import com.newrelic.metrics.publish.util.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An extensible class for gathering metrics from a system.
@@ -13,7 +14,7 @@ import com.newrelic.metrics.publish.util.Logger;
  */
 public abstract class Agent {
 
-    private static final Logger logger = Logger.getLogger(Agent.class);
+    private static final Logger logger = LoggerFactory.getLogger(Agent.class);
 
     private static final String REPORTING_METRIC_MSG = "Reporting metric: ";
 
@@ -96,7 +97,7 @@ public abstract class Agent {
      */
     public void reportMetric(String metricName, String units, Number value) {
         if (value != null) {
-            logger.debug(REPORTING_METRIC_MSG, metricName);
+            logger.debug(REPORTING_METRIC_MSG + ": " +metricName);
             collector.addData(metricName, units, value);
         }
     }
@@ -115,7 +116,7 @@ public abstract class Agent {
      */
     public void reportMetric(String metricName, String units, int count, Number value, Number minValue, Number maxValue, Number sumOfSquares) {
         if (value != null && minValue != null && maxValue != null && sumOfSquares != null) {
-            logger.debug(REPORTING_METRIC_MSG, metricName);
+            logger.debug(REPORTING_METRIC_MSG + ": " + metricName);
             collector.addData(metricName, units, count, value, minValue, maxValue, sumOfSquares);
         }
     }

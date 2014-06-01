@@ -13,7 +13,8 @@ import org.json.simple.parser.ParseException;
 
 import com.newrelic.metrics.publish.configuration.Config;
 import com.newrelic.metrics.publish.configuration.ConfigurationException;
-import com.newrelic.metrics.publish.util.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A Factory for creating configured {@link Agent}s.
@@ -27,8 +28,8 @@ import com.newrelic.metrics.publish.util.Logger;
  * @see Config
  */
 public abstract class AgentFactory {
-    
-    private static final Logger logger = Logger.getLogger(AgentFactory.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(AgentFactory.class);
 
     /**
      * Return a new instance of the appropriate {@link Agent} subclass, configured with information
@@ -95,7 +96,7 @@ public abstract class AgentFactory {
 
     private void createAndRegister(Runner runner, Map<String, Object> map) throws ConfigurationException {
         Agent agent = createConfiguredAgent(map);
-        logger.debug("Created agent: ", agent);
+        logger.debug("Created agent: " + agent);
         runner.register(agent);
     }
 

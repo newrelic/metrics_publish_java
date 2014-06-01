@@ -16,7 +16,8 @@ import com.newrelic.metrics.publish.binding.Request;
 import com.newrelic.metrics.publish.configuration.Config;
 import com.newrelic.metrics.publish.configuration.ConfigurationException;
 import com.newrelic.metrics.publish.configuration.SDKConfiguration;
-import com.newrelic.metrics.publish.util.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The main entry point for executing the SDK.
@@ -26,7 +27,7 @@ import com.newrelic.metrics.publish.util.Logger;
  */
 public class Runner {
 
-    private static Logger logger;
+    private static final Logger logger = LoggerFactory.getLogger(Runner.class);
 
     private List<Agent> componentAgents;
     private final SDKConfiguration config;
@@ -44,11 +45,6 @@ public class Runner {
 
         try {
             Config.init();
-            Logger.init(Config.getValue("log_level", "info"),
-                        Config.getValue("log_file_path", "logs"),
-                        Config.getValue("log_file_name", "newrelic_plugin.log"),
-                        getLogLimitInKilobytes());
-            logger = Logger.getLogger(Runner.class);
             config = new SDKConfiguration();
         } catch (Exception e) {
             throw new ConfigurationException(e.getMessage());
@@ -142,7 +138,7 @@ public class Runner {
 
         createAgents();
         if(config.internalGetServiceURI() != null) {
-            logger.info("Metric service URI: ", config.internalGetServiceURI());
+            logger.info("Metric service URI: " + config.internalGetServiceURI());
         }
 
         context = new Context();
@@ -206,9 +202,9 @@ public class Runner {
                 for (Iterator<Agent> iterator = componentAgents.iterator(); iterator.hasNext();) {
                     Agent agent = iterator.next();
                     agent.getCollector().setRequest(request);
-                    logger.debug("Beginning poll cycle for agent: '", agent.getAgentName(), "'");
+                    logger.debug("Beginning poll cycle for agent: '" + agent.getAgentName() + "'");
                     agent.pollCycle();
-                    logger.debug("Ending poll cycle for agent: '", agent.getAgentName(), "'");
+                    logger.debug("Ending poll cycle for agent: '" +  agent.getAgentName() + "'");
                 }
 
                 request.deliver();
