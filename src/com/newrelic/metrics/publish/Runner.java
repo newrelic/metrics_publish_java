@@ -123,10 +123,9 @@ public class Runner {
             System.err.println("SEVERE: An error has occurred");
             e.printStackTrace();
         } finally {
-            // clean up and exit
+            // clean up
             future.cancel(true);
             executor.shutdown();
-            System.exit(1);
         }
     }
 

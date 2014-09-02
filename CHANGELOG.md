@@ -1,6 +1,12 @@
 ## New Relic Platform Java SDK Change Log ##
 
-### v2.0.0 - Unreleased ###
+### v2.0.1 - September 2nd, 2014 ###
+
+**Changes**
+
+* The `Runner` class no longer invokes a System.exit call after its polling thread completes
+
+### v2.0.0 - April 22, 2014 ###
 
 **Improvements**
 
